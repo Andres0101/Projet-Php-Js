@@ -1,8 +1,8 @@
 {
-  "name": "shop",
+  "name": "Projet Php-Js",
   "version": "2.0.0",
   "authors": [
-    "The Polymer Authors"
+    "Andrés Bonilla Escobar"
   ],
   "private": true,
   "dependencies": {

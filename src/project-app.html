@@ -14,20 +14,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/helpers/helpers.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="project-category-data.html">
-<!-- Since 'home' is the default route, eagerly load it. -->
+
+<link rel="import" href="project-common-styles.html">
+<link rel="import" href="project-icons.html">
 <link rel="import" href="project-home.html">
 
 <dom-module id="project-app">
 
   <template>
 
-    <style>
-
+    <style include="project-common-styles">
       :host {
         display: block;
         position: relative;
@@ -42,6 +48,86 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --paper-spinner-color: var(--app-accent-color);
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         color: var(--app-primary-color);
+      }
+
+      #login_container {
+        padding: 0 20%;
+      }
+      #login_form {
+        background-color: white;
+        padding: 40px 80px;
+      }
+
+      .btn_google,
+      .btn_logout {
+        color: black;
+        background-color: #ffffff;
+        min-height: 40px;
+        width: 100%;
+      }
+      .btn_google_icon,
+      .btn_logout_icon {
+        padding-left: 8px;
+        width: 30px;
+        height: 16px;
+      }
+      .btn_google_text,
+      .btn_logout_text {
+        width: 100%;
+        text-align: center;
+      }
+
+      .div_line {
+        background-color: var(--paper-grey-500);
+        height: 1px;
+        margin: 50px 0;
+        min-width: 300px;
+        max-width: 400px;
+      }
+      .div__span {
+        line-height: 15px;
+        padding: 16px;
+        background: white;
+        font-size: 12px;
+        font-style: italic;
+        color: var(--paper-grey-500);
+        font-weight: lighter;
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;
+        user-select: none;
+      }
+
+      #passwordIconButton {
+        color: var(--paper-grey-500);
+      }
+
+      .btn_signin,
+      .btn_signup,
+      .btn_reset_pw {
+        margin: 15px 0;
+        width: 100%;
+      }
+      .signup_toggle {
+        font-size: 12px;
+        color: var(--paper-grey-500);
+        text-align: center;
+      }
+
+      .link_reset_pw {
+        color: var(--paper-grey-500);
+        text-decoration: none;
+        text-transform: none;
+        font-size: 12px;
+        font-style: italic;
+        font-weight: lighter;
+        cursor: pointer;
+        margin: 0;
+        padding: 0;
+      }
+      .link_reset_pw:hover {
+        text-decoration: underline;
       }
 
       app-header {
@@ -205,6 +291,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-transform: uppercase;
       }
 
+      .bar_progress  {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        border-radius: 0px 0px 3px 3px;
+        --paper-progress-active-color: var(--paper-light-blue-600);
+        --paper-progress-secondary-color: var(--paper-light-blue-600);
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
       /* small screen */
       @media (max-width: 767px) {
         :host {
@@ -222,9 +322,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
 
-    <!--
-      app-location and app-route elements provide the state of the URL for the app.
-    -->
+    <!-- Les éléments app-location et app-route fournissent l'état de l'URL
+    de l'application. -->
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
@@ -234,98 +333,209 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
 
-    <!--
-      project-category-data provides the list of categories.
-    -->
-    <project-category-data categories="{{categories}}"></project-category-data>
+    <!-- Condition pour valider si il y a un utilisateur connecté
+    Si il n'y a pas d'utilisateur, on montres le login form. -->
+    <template is="dom-if" if="[[!userLogin]]" restamp="true">
+      <div id="login_container" class="layout vertical center">
+        <form is="iron-form" id="login_form" method="post" action="/form/handler.php">
+          <paper-button class="btn_google" raised disabled$="[[inProgress]]">
+            <iron-icon class="btn_google_icon" icon="icons:google"></iron-icon>
+            <span class="btn_google_text">Se connecter avec Google</span>
+            <paper-progress class="bar_progress" hidden$="[[!_inProgressGoogle]]" disabled$="[[!_inProgressGoogle]]" indeterminate></paper-progress>
+          </paper-button>
 
-    <!--
-      project-cart-data maintains the state of the user's shopping cart (in localstorage) and
-      calculates the total amount.
-    -->
-    <project-cart-data
-        id="cart"
-        cart="{{cart}}"
-        num-items="{{numItems}}"
-        total="{{total}}"></project-cart-data>
+          <div class="div_line layout vertical center-center">
+            <span class="div__span">ou</span>
+          </div>
 
-    <app-header role="navigation" id="header" effects="waterfall" condenses reveals>
-      <app-toolbar>
-        <div class="left-bar-item">
-          <paper-icon-button
-              class="menu-btn"
-              icon="menu"
-              on-click="_toggleDrawer"
-              aria-label="Categories">
-          </paper-icon-button>
-          <a class="back-btn" href="/list/[[categoryName]]" tabindex="-1">
-            <paper-icon-button icon="arrow-back" aria-label="Go back"></paper-icon-button>
-          </a>
-        </div>
-        <div class="logo" main-title><a href="/" aria-label="SHOP Home">SHOP</a></div>
-        <div class="cart-btn-container">
-          <a href="/cart" tabindex="-1">
-            <paper-icon-button icon="shopping-cart" aria-label$="Shopping cart: [[_computePluralizedQuantity(numItems)]]"></paper-icon-button>
-          </a>
-          <div class="cart-badge" aria-hidden="true" hidden$="[[!numItems]]">[[numItems]]</div>
-        </div>
-      </app-toolbar>
+          <paper-input id="emailInput"
+            type="email"
+            label="Email"
+            value="{{email}}"
+            error-message="Adresse mail invalide"
+            on-keydown="_submitOnEnter"
+            required>
+          </paper-input>
 
-      <!-- Lazy-create the tabs for larger screen sizes. -->
-      <div id="tabContainer" sticky$="[[_shouldShowTabs]]" hidden$="[[!_shouldShowTabs]]">
-        <dom-if if="[[_shouldRenderTabs]]">
-          <template>
-            <project-tabs
-                selected="[[categoryName]]"
-                attr-for-selected="name">
-              <dom-repeat items="[[categories]]" as="category" initial-count="4">
-                <template>
-                <project-tab name="[[category.name]]">
-                  <a href="/list/[[category.name]]">[[category.title]]</a>
-                </project-tab>
-                </template>
-              </dom-repeat>
-            </project-tabs>
-          </template>
-        </dom-if>
-      </div>
-    </app-header>
+          <template is="dom-if" if="[[!showResetPW]]">
+            <paper-input id="passwordInput"
+              type="password"
+              label="Mot de passe"
+              value="{{password}}"
+              error-message="Mot de passe incorrect"
+              on-keydown="_submitOnEnter"
+              required>
+              <paper-icon-button
+                id="passwordIconButton"
+                slot="suffix"
+                on-down="_revealPW"
+                on-up="_hidePW"
+                icon="icons:visibility"
+                title="Maintenir pour voir le mot de passe.">
+              </paper-icon-button>
+            </paper-input>
 
-    <!-- Lazy-create the drawer for small screen sizes. -->
-    <dom-if if="[[_shouldRenderDrawer]]">
-      <template>
-      <!-- Two-way bind `drawerOpened` since app-drawer can update `opened` itself. -->
-      <app-drawer opened="{{drawerOpened}}" swipe-open tabindex="0">
-        <iron-selector role="navigation" class="drawer-list" selected="[[categoryName]]" attr-for-selected="name">
-          <dom-repeat items="[[categories]]" as="category" initial-count="4">
-            <template>
-              <a name="[[category.name]]" href="/list/[[category.name]]">[[category.title]]</a>
+            <template is="dom-if" if="[[showSignUp]]">
+              <paper-input id="repeatPasswordInput"
+                type="password"
+                label="Re-enter Password"
+                value="{{_passwordAgain}}"
+                error-message="Les mots de passe ne correspondent pas"
+                on-keydown="_submitOnEnter"
+                required>
+              </paper-input>
+              <paper-button raised type="submit" on-click="_signUp" class="btn_signup" disabled$="[[_inProgress]]">
+                <span>S'inscrire</span>
+                <paper-progress class="bar_progress" hidden$="[[!_inProgress]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
+              </paper-button>
+              <p class="signup_toggle">
+                <span>Déjà un compte?</span>
+                <paper-button on-click="_toggleShowSignUp" tabindex="0"
+                  title="J'ai déjà un compte? Sign in" noink>
+                  Se connecter
+                </paper-button>
+              </p>
             </template>
-          </dom-repeat>
-        </iron-selector>
-      </app-drawer>
-      </template>
-    </dom-if>
+            <template is="dom-if" if="[[!showSignUp]]">
+              <p>
+                <paper-button class="link_reset_pw"
+                on-click="toggleShowResetPW" tabindex="0" noink>
+                Mot de passe oublié</paper-button>
+              </p>
+              <paper-button raised type="submit" on-click="_signIn" class="btn_signin" disabled$="[[_inProgress]]">
+                <span>Se connecter</span>
+                <paper-progress class="bar_progress" hidden$="[[!_inProgress]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
+              </paper-button>
+              <p class="signup_toggle">
+                <span>Pas encore de compte?</span>
+                <paper-button on-click="_toggleShowSignUp" tabindex="0"
+                title="Je n'ai pas de compte? Sign up" noink>
+                S'inscrire</paper-button>
+              </p>
+            </template>
+          </template>
 
-    <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
-      <!-- home view -->
-      <project-home name="home" categories="[[categories]]"></project-home>
-      <!-- list view of items in a category -->
-      <project-list name="list" route="[[subroute]]" offline="[[offline]]"></project-list>
-      <!-- detail view of one item -->
-      <project-detail name="detail" route="[[subroute]]" offline="[[offline]]"></project-detail>
-      <!-- cart view -->
-      <project-cart name="cart" cart="[[cart]]" total="[[total]]"></project-cart>
-      <!-- checkout view -->
-      <project-checkout name="checkout" cart="[[cart]]" total="[[total]]" route="{{subroute}}"></project-checkout>
+          <template is="dom-if" if="[[showResetPW]]">
+            <paper-button raised type="submit" on-click="_resetPassword" class="btn_reset_pw" disabled$="[[_inProgress]]">
+              <span>Réinitialiser le mot de passe</span>
+              <paper-progress class="bar_progress" hidden$="[[!_inProgress]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
+            </paper-button>
+            <p>
+              <paper-button class="link_reset_pw" on-click="toggleShowResetPW"
+              tabindex="0" noink>Je me souviens de mon mot de passe.
+            </paper-button>
+            </p>
+          </template>
+        </form>
+      </div>
+    </template>
 
-      <project-404-warning name="404"></project-404-warning>
-    </iron-pages>
+    <!-- Condition pour valider si il y a un utilisateur connecté
+    Si il y a un utilisateur, on montres le contenu du site -->
+    <template is="dom-if" if="[[userLogin]]" restamp="true">
+
+      <paper-button class="btn_logout" raised disabled$="[[_inProgress]]" on-tap="_userLogout">
+        <iron-icon class="btn_logout_icon" icon="exit-to-app"></iron-icon>
+        <span class="btn_logout_text">Déconnexion</span>
+        <paper-progress class="bar_progress" hidden$="[[!_inProgress]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
+      </paper-button>
+
+      <!--
+        project-category-data provides the list of categories.
+      -->
+      <project-category-data categories="{{categories}}"></project-category-data>
+
+      <!--
+        project-cart-data maintains the state of the user's shopping cart (in localstorage) and
+        calculates the total amount.
+      -->
+      <project-cart-data
+          id="cart"
+          cart="{{cart}}"
+          num-items="{{numItems}}"
+          total="{{total}}"></project-cart-data>
+
+      <app-header role="navigation" id="header" effects="waterfall" condenses reveals>
+        <app-toolbar>
+          <div class="left-bar-item">
+            <paper-icon-button
+                class="menu-btn"
+                icon="menu"
+                on-click="_toggleDrawer"
+                aria-label="Categories">
+            </paper-icon-button>
+            <a class="back-btn" href="/list/[[categoryName]]" tabindex="-1">
+              <paper-icon-button icon="arrow-back" aria-label="Go back"></paper-icon-button>
+            </a>
+          </div>
+          <div class="logo" main-title><a href="/" aria-label="SHOP Home">SHOP</a></div>
+          <div class="cart-btn-container">
+            <a href="/cart" tabindex="-1">
+              <paper-icon-button icon="shopping-cart" aria-label$="Shopping cart: [[_computePluralizedQuantity(numItems)]]"></paper-icon-button>
+            </a>
+            <div class="cart-badge" aria-hidden="true" hidden$="[[!numItems]]">[[numItems]]</div>
+          </div>
+        </app-toolbar>
+
+        <!-- Lazy-create the tabs for larger screen sizes. -->
+        <div id="tabContainer" sticky$="[[_shouldShowTabs]]" hidden$="[[!_shouldShowTabs]]">
+          <dom-if if="[[_shouldRenderTabs]]">
+            <template>
+              <project-tabs
+                  selected="[[categoryName]]"
+                  attr-for-selected="name">
+                <dom-repeat items="[[categories]]" as="category" initial-count="4">
+                  <template>
+                  <project-tab name="[[category.name]]">
+                    <a href="/list/[[category.name]]">[[category.title]]</a>
+                  </project-tab>
+                  </template>
+                </dom-repeat>
+              </project-tabs>
+            </template>
+          </dom-if>
+        </div>
+      </app-header>
+
+      <!-- Lazy-create the drawer for small screen sizes. -->
+      <dom-if if="[[_shouldRenderDrawer]]">
+        <template>
+        <!-- Two-way bind `drawerOpened` since app-drawer can update `opened` itself. -->
+        <app-drawer opened="{{drawerOpened}}" swipe-open tabindex="0">
+          <iron-selector role="navigation" class="drawer-list" selected="[[categoryName]]" attr-for-selected="name">
+            <dom-repeat items="[[categories]]" as="category" initial-count="4">
+              <template>
+                <a name="[[category.name]]" href="/list/[[category.name]]">[[category.title]]</a>
+              </template>
+            </dom-repeat>
+          </iron-selector>
+        </app-drawer>
+        </template>
+      </dom-if>
+
+      <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
+        <!-- home view -->
+        <project-home name="home" categories="[[categories]]"></project-home>
+        <!-- list view of items in a category -->
+        <project-list name="list" route="[[subroute]]" offline="[[offline]]"></project-list>
+        <!-- detail view of one item -->
+        <project-detail name="detail" route="[[subroute]]" offline="[[offline]]"></project-detail>
+        <!-- cart view -->
+        <project-cart name="cart" cart="[[cart]]" total="[[total]]"></project-cart>
+        <!-- checkout view -->
+        <project-checkout name="checkout" cart="[[cart]]" total="[[total]]" route="{{subroute}}"></project-checkout>
+
+        <project-404-warning name="404"></project-404-warning>
+      </iron-pages>
+    </template>
 
     <footer>
       <a href="https://www.polymer-project.org/1.0/toolbox/">Made by Polymer</a>
       <div class="demo-label">Demo Only</div>
     </footer>
+
+    <!-- Montrer les messages de l'application -->
+    <paper-toast id="toast"></paper-toast>
 
     <!-- a11y announcer -->
     <div class="announcer" aria-live="assertive">[[_a11yLabel]]</div>
@@ -342,6 +552,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       static get is() { return 'project-app'; }
 
       static get properties() { return {
+        showResetPW: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * `True` if a user is authenticated, otherwise `false`.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        userLogin: {
+          type: Boolean,
+          value: false
+        },
+
         page: {
           type: String,
           reflectToAttribute: true,
@@ -351,6 +577,66 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         numItems: {
           type: Number,
           value: 0
+        },
+
+        /**
+         * Valeur du champ de l'e-mail'.
+         *
+         * @type {String}
+         */
+        email: {
+          type: String
+        },
+
+        /**
+         * Valeur du champ du mot de passe.
+         *
+         * @type {String}
+         */
+        password: {
+          type: String
+        },
+
+        /**
+         * Valeur du champ du confirmation de mot de passe.
+         *
+         * @type {String}
+         */
+        _passwordAgain: {
+          type: String
+        },
+
+        /**
+         * Indique si un processus de connexion ou de déconnexion est en cours.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        _inProgress: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Indique si un processus de connexion avec Google est en cours.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        _inProgressGoogle: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Indique s'il faut afficher le formulaire de signUp.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        showSignUp: {
+          type: Boolean,
+          value: false
         },
 
         _shouldShowTabs: {
@@ -392,6 +678,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           window.addEventListener('online', (e)=>this._notifyNetworkStatus(e));
           window.addEventListener('offline', (e)=>this._notifyNetworkStatus(e));
         });
+
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // L'utilisateur est connecté.
+            var displayName = user.displayName;
+            var email = user.email;
+            var emailVerified = user.emailVerified;
+            var photoURL = user.photoURL;
+            var isAnonymous = user.isAnonymous;
+            var uid = user.uid;
+            var providerData = user.providerData;
+
+            this.userLogin = true;
+          } else {
+            // L'utilisateur est déconnecté.
+            this.userLogin = false;
+          }
+        }.bind(this));
       }
 
       _routePageChanged(page) {
@@ -465,8 +769,199 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
+      // =========================== Actions toggles ===========================
+      /**
+       * Affiche le menu à gauche de l'écran.
+       */
       _toggleDrawer() {
         this.drawerOpened = !this.drawerOpened;
+      }
+      /**
+       * Bascule les vues de formulaire de la vue signIn à la vue signUp et
+       * inversement.
+       */
+      _toggleShowSignUp() {
+        this.showSignUp = !this.showSignUp;
+      }
+      /**
+       * Bascule les vues de formulaire de la vue signUp à la vue de réinitialiser
+       * le mot de passe
+       */
+      toggleShowResetPW() {
+        if (this.showResetPW) {
+          this.showResetPW = false;
+          this.showSignUp = false
+        } else {
+          this.showResetPW = true;
+        }
+      }
+
+      // =========================== SignIn section ===========================
+      /**
+       * Essaie de se connecter un utilisateur en utilisant les valeurs
+       * du formulaire.
+       */
+      _signIn() {
+        var e = this.shadowRoot.querySelector('#emailInput').validate();
+        var p = this.shadowRoot.querySelector('#passwordInput').validate();
+        if (e && p) {
+          this._inProgress = true;
+          firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+            .then(function (user) {
+              // Lorsque l'utilisateur se connecte,
+              // on modifie l'indicateur _inProgress à false
+              // et on nettoie les inputs de formulaire.
+              this._inProgress = false;
+              this._cleanInputs();
+            }.bind(this))
+            .catch(function (error) {
+              var errorCode = error.code;
+              var errorMessage = error.message;
+
+              // Lorsqu'un erreur a été détecté, on modifie l'indicateur _inProgress à false
+              this._inProgress = false;
+
+              // Nettoie les inputs de formulaire en cas de mot de passe ou email invalide
+              if (errorCode == "auth/user-not-found") {
+                // Modifier paper-toast texte
+                this.$.toast.text = "Il n'y a pas d'enregistrement utilisateur correspondant à cet identifiant";
+                this._cleanInputs();
+              } else if (errorCode == "auth/wrong-password") {
+                // Modifier paper-toast texte
+                this.$.toast.text = "Le mot de passe est invalide";
+              }
+              // Montrer paper-toast
+              this.$.toast.show();
+              this._cleanPasswordInput();
+            }.bind(this));
+        }
+      }
+
+      // =========================== SignUp section ===========================
+      /**
+       * Essaie d'inscrire un utilisateur en utilisant les valeurs du formulaire.
+       */
+      _signUp(e) {
+        var e = this.shadowRoot.querySelector('#emailInput').validate();
+        var p = this.shadowRoot.querySelector('#passwordInput').validate();
+
+        this.shadowRoot.querySelector('#repeatPasswordInput').invalid = false;
+        var pRepeat = this.password == this._passwordAgain &&
+          this.shadowRoot.querySelector('#repeatPasswordInput').validate();
+
+        if (e && p && pRepeat) {
+          this._inProgress = true;
+          firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+            .then(function (user) {
+              database.ref('users/' + user.uid).set({
+                email: user.email,
+                type_login: 'email'
+              });
+
+              // En enregistrant l'utilisateur dans la base de données,
+              // on modifie l'indicateur _inProgress à false
+              this._inProgress = false;
+              this.userLogin = true;
+              this._cleanInputs();
+            }.bind(this))
+            .catch(function (error) {
+              var errorCode = error.code;
+              var errorMessage = error.message;
+
+              // Lorsqu'un erreur a été détecté, on modifie l'indicateur _inProgress à false
+              this._inProgress = false;
+
+              // Nettoie les inputs de formulaire en cas de mot de passe ou email invalide
+              if (errorCode == "auth/user-not-found") { // Utilisateur invalide
+                // Modifier paper-toast texte
+                this.$.toast.text = "Il n'y a pas d'enregistrement utilisateur correspondant à cet identifiant";
+                this._cleanInputs();
+              } else if (errorCode == "auth/wrong-password") { // Mot de passe invalide
+                // Modifier paper-toast texte
+                this.$.toast.text = "Le mot de passe est invalide";
+              } else if (errorCode == "auth/weak-password") { // Mot de passe faible
+                // Modifier paper-toast texte
+                this.$.toast.text = "Le mot de passe doit contenir au moins 6 caractères";
+              }
+              // Montrer paper-toast
+              this.$.toast.show();
+              this._cleanPasswordInput();
+            }.bind(this));
+
+          this.email = null;
+          this.password = null;
+          this._passwordAgain = null;
+        } else if (!pRepeat) {
+          this.shadowRoot.querySelector('#repeatPasswordInput').invalid = true;
+        }
+      }
+
+      // ============= Méthode pour réinitialiser le mot de passe =============
+      /**
+       * Envoie un e-mail pour réinitialiser le mot de passe du compte.
+       * L'email est envoyé à l'adresse saisie dans le formulaire lorsque
+       * l'utilisateur clique sur le lien pour réinitialiser son mot de passe.
+       */
+      _resetPassword() {
+        e = this.shadowRoot.querySelector('#emailInput').validate()
+        if (e) {
+          this._inProgress = true;
+          this.shadowRoot.querySelector('#auth').auth.sendPasswordResetEmail(this.email)
+            .then(function() {
+              this.$.toast.text = "La réinitialisation du mot de passe a été envoyée. Veuillez vérifier votre boîte de réception.";
+              this.$.toast.show();
+            }.bind(this), function(error) {
+              this.$.toast.text = error.message;
+              this.$.toast.show();
+            }.bind(this))
+            .finally(function(){
+              // Définissez _inProgress sur false une fois que tout est terminé
+              this._inProgress = false;
+            }.bind(this));
+        }
+      }
+
+      // ================== Méthodes de nettoyage des inputs ==================
+      /**
+       * Nettoie les inputs d'e-mail et de mot de passe.
+       */
+      _cleanInputs() {
+        this.shadowRoot.querySelector('#emailInput').value = '';
+        this._cleanPasswordInput();
+      }
+
+      /**
+       * Nettoie l'input de mot de passe.
+       */
+      _cleanPasswordInput() {
+        this.shadowRoot.querySelector('#passwordInput').value = '';
+      }
+
+      // ======================= Méthode de déconnexion =======================
+      _userLogout() {
+        firebase.auth().signOut()
+          .then(function() {
+            // Déconnexion réussie.
+            this.$.toast.text = "Déconnexion réussie";
+            this.$.toast.show();
+          }.bind(this))
+          .catch(function(error) {});
+      }
+
+      // ========================= Evénements clavier =========================
+      /**
+       *  Vérifie que "Entrée" est pressé et soumet l'action de formulaire appropriée
+       */
+      _submitOnEnter(e) {
+        if (e.keyCode === 13) {
+          if (this.showSignUp) {
+            this._signUp();
+          } else if (this.showResetPW) {
+            this._resetPassword();
+          } else if (!this.showSignUp) {
+            this._signIn()
+          }
+        }
       }
 
       // Elements in the app can notify section changes.
@@ -549,6 +1044,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
+      // ======================= Mot de passe visibilité =======================
+      /**
+       * Révèle le mot de passe en basculant le type au texte
+       */
+      _revealPW(e) {
+        this.shadowRoot.querySelector('#passwordIconButton').icon = 'icons:visibility-off';
+        this.shadowRoot.querySelector('#passwordInput').type = 'text';
+      }
+
+      /**
+       * Masque le mot de passe en basculant le type sur mot de passe
+       * Hides the password in the parent by switching the type to password
+       */
+      _hidePW(e) {
+        setTimeout(function() {
+          this.shadowRoot.querySelector('#passwordIconButton').icon = 'icons:visibility';
+          this.shadowRoot.querySelector('#passwordInput').type = 'password';
+        }.bind(this), 1000)
+      }
+
       _onFallbackSelectionTriggered() {
         this.page = '404';
       }
@@ -568,7 +1083,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _computePluralizedQuantity(quantity) {
         return quantity + ' ' + (quantity === 1 ? 'item' : 'items');
       }
-
     }
 
     customElements.define(ShopApp.is, ShopApp);

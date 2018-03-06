@@ -37,8 +37,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
         position: relative;
-        padding-top: 130px;
-        padding-bottom: 64px;
         min-height: 100vh;
         --app-primary-color: #202020;
         --app-secondary-color: #757575;
@@ -51,25 +49,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       #login_container {
-        padding: 0 20%;
+        padding: 5% 20%;
       }
       #login_form {
         background-color: white;
         padding: 40px 80px;
       }
 
+      .btn_google {
+        width: 100%;
+      }
       .btn_google,
       .btn_logout {
         color: black;
         background-color: #ffffff;
         min-height: 40px;
-        width: 100%;
       }
       .btn_google_icon,
       .btn_logout_icon {
-        padding-left: 8px;
+        padding-right: 8px;
         width: 30px;
         height: 16px;
+      }
+      .btn_logout_text {
+        font-size: 12px;
       }
       .btn_google_text,
       .btn_logout_text {
@@ -131,8 +134,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       app-header {
-        @apply --layout-fixed-top;
-        z-index: 1;
         background-color: rgba(255, 255, 255, 0.95);
         --app-header-shadow: {
           box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.2);
@@ -260,25 +261,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       iron-pages {
         max-width: 1440px;
         margin: 0 auto;
-      }
-
-      footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        text-align: center;
-        margin-top: 20px;
-        line-height: 24px;
-      }
-
-      footer > a {
-        color: var(--app-secondary-color);
-        text-decoration: none;
-      }
-
-      footer > a:hover {
-        text-decoration: underline;
       }
 
       .demo-label {
@@ -433,13 +415,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- Condition pour valider si il y a un utilisateur connecté
     Si il y a un utilisateur, on montres le contenu du site -->
     <template is="dom-if" if="[[userLogin]]" restamp="true">
-
-      <paper-button class="btn_logout" raised disabled$="[[_inProgress]]" on-tap="_userLogout">
-        <iron-icon class="btn_logout_icon" icon="exit-to-app"></iron-icon>
-        <span class="btn_logout_text">Déconnexion</span>
-        <paper-progress class="bar_progress" hidden$="[[!_inProgress]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
-      </paper-button>
-
       <!--
         project-category-data provides the list of categories.
       -->
@@ -469,6 +444,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </a>
           </div>
           <div class="logo" main-title><a href="/" aria-label="SHOP Home">SHOP</a></div>
+
+          <paper-button class="btn_logout" raised disabled$="[[_inProgress]]" on-tap="_userLogout">
+            <iron-icon class="btn_logout_icon" icon="icons:logout"></iron-icon>
+            <span class="btn_logout_text">Déconnexion</span>
+            <paper-progress class="bar_progress" hidden$="[[!_inProgress]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
+          </paper-button>
+
           <div class="cart-btn-container">
             <a href="/cart" tabindex="-1">
               <paper-icon-button icon="shopping-cart" aria-label$="Shopping cart: [[_computePluralizedQuantity(numItems)]]"></paper-icon-button>
@@ -528,11 +510,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <project-404-warning name="404"></project-404-warning>
       </iron-pages>
     </template>
-
-    <footer>
-      <a href="https://www.polymer-project.org/1.0/toolbox/">Made by Polymer</a>
-      <div class="demo-label">Demo Only</div>
-    </footer>
 
     <!-- Montrer les messages de l'application -->
     <paper-toast id="toast"></paper-toast>

@@ -14,6 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/helpers/helpers.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
@@ -153,7 +154,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       #header_logo {
-        width: 100px;
+        width: 50px;
         height: 50px;
         margin-top: 10px;
       }
@@ -315,6 +316,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         pattern="/:page"
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
+
+    <app-localstorage-document key="session" data="{{userInfo}}"></app-localstorage-document>
 
     <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
 
@@ -529,7 +532,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
 
-    // performance logging
+    // Performance de connexion
     window.performance && performance.mark && performance.mark('project-app - before register');
 
     class ShopApp extends Polymer.Element {
@@ -537,13 +540,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       static get is() { return 'project-app'; }
 
       static get properties() { return {
-        showResetPW: {
-          type: Boolean,
-          value: false
+        /**
+         * Array qui contient l'information de la session.
+         *
+         * @type {Array}
+         * @default []
+         */
+        userInfo: {
+          type: Array,
+          value: () => [],
+          notify: true
         },
 
         /**
-         * `True` if a user is authenticated, otherwise `false`.
+         * `True` si un utilisateur est authentifié, sinon `false`.
          *
          * @type {Boolean}
          * @default false
@@ -553,6 +563,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: false
         },
 
+        /**
+         * Valeur de la page où on est actuellement.
+         *
+         * @type {String}
+         */
         page: {
           type: String,
           reflectToAttribute: true,
@@ -624,6 +639,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: false
         },
 
+        /**
+         * `True` lorsqu'on est dans le formulaire d'inscription, sinon `false`.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        showResetPW: {
+          type: Boolean,
+          value: false
+        },
+
         _shouldShowTabs: {
           computed: '_computeShouldShowTabs(page, smallScreen)'
         },
@@ -667,14 +693,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             // L'utilisateur est connecté.
-            var displayName = user.displayName;
-            var email = user.email;
-            var emailVerified = user.emailVerified;
-            var photoURL = user.photoURL;
-            var isAnonymous = user.isAnonymous;
-            var uid = user.uid;
-            var providerData = user.providerData;
-
+            // Remplir la variable qui contient l'information de la session.
+            this.push('userInfo', user);
             this.userLogin = true;
           } else {
             // L'utilisateur est déconnecté.
@@ -950,6 +970,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             // Déconnexion réussie.
             this.$.toast.text = "Déconnexion réussie";
             this.$.toast.show();
+
+            // Vider la variable qui contient l'information de la session
+            this.set('userInfo', []);
           }.bind(this))
           .catch(function(error) {});
       }

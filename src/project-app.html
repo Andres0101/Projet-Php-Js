@@ -317,7 +317,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template is="dom-if" if="[[!userLogin]]" restamp="true">
       <div id="login_container" class="layout vertical center">
         <form is="iron-form" id="login_form" method="post" action="/form/handler.php">
-          <paper-button class="btn_google" raised disabled$="[[inProgress]]">
+          <paper-button class="btn_google" raised disabled$="[[inProgress]]" on-tap="_signInGoogle">
             <iron-icon class="btn_google_icon" icon="icons:google"></iron-icon>
             <span class="btn_google_text">Se connecter avec Google</span>
             <paper-progress class="bar_progress" hidden$="[[!_inProgressGoogle]]" disabled$="[[!_inProgressGoogle]]" indeterminate></paper-progress>
@@ -777,7 +777,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // =========================== SignIn section ===========================
       /**
        * Essaie de se connecter un utilisateur en utilisant les valeurs
-       * du formulaire.
+       * du formulaire (E-mail).
        */
       _signIn() {
         var e = this.shadowRoot.querySelector('#emailInput').validate();
@@ -815,6 +815,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
+      /**
+       * Essaie de se connecter un utilisateur en utilisant son compte Google.
+       */
+      _signInGoogle() {
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+          // Les informations d'utilisateur connecté.
+          var user = result.user;
+
+          database.ref('users/' + user.uid).set({
+            name: user.displayName,
+            email: user.email,
+            type_login: 'google'
+          });
+        }.bind(this)).catch(function(error) {
+          // Handle des erreurs.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          
+          console.log(error);
+        });
+      }
+
       // =========================== SignUp section ===========================
       /**
        * Essaie d'inscrire un utilisateur en utilisant les valeurs du formulaire.
@@ -832,6 +854,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
             .then(function (user) {
               database.ref('users/' + user.uid).set({
+                name: user.email,
                 email: user.email,
                 type_login: 'email'
               });

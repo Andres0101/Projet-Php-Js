@@ -15,6 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
@@ -146,19 +147,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: var(--app-primary-color);
       }
 
-      .logo {
-        text-align: center;
-      }
-
-      .logo a {
-        font-size: 16px;
-        font-weight: 600;
-        letter-spacing: 0.3em;
-        color: var(--app-primary-color);
-        text-decoration: none;
-        /* required for IE 11, so this <a> can receive pointer events */
-        display: inline-block;
-        pointer-events: auto;
+      #header_logo {
+        width: 100px;
+        height: 50px;
+        margin-top: 10px;
       }
 
       .left-bar-item {
@@ -289,12 +281,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       /* small screen */
       @media (max-width: 767px) {
-        :host {
-          padding-top: 64px;
-        }
-
         .menu-btn {
           display: block;
+        }
+        .btn_logout {
+          min-width: 0;
+        }
+        .btn_logout_icon {
+          padding: 0;
+        }
+        .btn_logout_text {
+          display: none;
         }
 
         :host([page=detail]) .menu-btn {
@@ -443,7 +440,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-icon-button icon="arrow-back" aria-label="Go back"></paper-icon-button>
             </a>
           </div>
-          <div class="logo" main-title><a href="/" aria-label="SHOP Home">SHOP</a></div>
+          <div class="layout horizontal center-center" main-title>
+            <a href="/" aria-label="Project Home">
+              <iron-image id="header_logo" src="../images/logo.svg" preload sizing="contain"></iron-image>
+            </a>
+          </div>
 
           <paper-button class="btn_logout" raised disabled$="[[_inProgress]]" on-tap="_userLogout">
             <iron-icon class="btn_logout_icon" icon="icons:logout"></iron-icon>

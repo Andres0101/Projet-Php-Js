@@ -15,6 +15,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
@@ -27,7 +29,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="project-category-data.html">
 
 <link rel="import" href="project-common-styles.html">
-<link rel="import" href="project-icons.html">
+<link rel="import" href="my-icons.html">
 <link rel="import" href="project-home.html">
 
 <dom-module id="project-app">
@@ -69,8 +71,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .btn_google_icon,
       .btn_logout_icon {
         padding-right: 8px;
-        width: 30px;
-        height: 16px;
       }
       .btn_logout_text {
         font-size: 12px;
@@ -134,6 +134,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-decoration: underline;
       }
 
+      .menu_btn,
+      iron-icon {
+        color: var(--paper-grey-700);
+      }
+
       app-header {
         background-color: rgba(255, 255, 255, 0.95);
         --app-header-shadow: {
@@ -157,8 +162,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width: 40px;
       }
 
-      .menu-btn {
+      .menu_btn {
         display: none;
+
       }
 
       .cart-btn-container {
@@ -281,7 +287,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       /* small screen */
       @media (max-width: 767px) {
-        .menu-btn {
+        .menu_btn {
           display: block;
         }
         .btn_logout {
@@ -294,7 +300,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           display: none;
         }
 
-        :host([page=detail]) .menu-btn {
+        :host([page=detail]) .menu_btn {
           display: none;
         }
       }
@@ -318,7 +324,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div id="login_container" class="layout vertical center">
         <form is="iron-form" id="login_form" method="post" action="/form/handler.php">
           <paper-button class="btn_google" raised disabled$="[[inProgress]]" on-tap="_signInGoogle">
-            <iron-icon class="btn_google_icon" icon="icons:google"></iron-icon>
+            <iron-icon class="btn_google_icon" icon="my-icons:google"></iron-icon>
             <span class="btn_google_text">Se connecter avec Google</span>
             <paper-progress class="bar_progress" hidden$="[[!_inProgressGoogle]]" disabled$="[[!_inProgressGoogle]]" indeterminate></paper-progress>
           </paper-button>
@@ -349,7 +355,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 slot="suffix"
                 on-down="_revealPW"
                 on-up="_hidePW"
-                icon="icons:visibility"
+                icon="visibility"
                 title="Maintenir pour voir le mot de passe.">
               </paper-icon-button>
             </paper-input>
@@ -431,7 +437,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-toolbar>
           <div class="left-bar-item">
             <paper-icon-button
-                class="menu-btn"
+                class="menu_btn"
                 icon="menu"
                 on-click="_toggleDrawer"
                 aria-label="Categories">
@@ -448,7 +454,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
 
           <paper-button class="btn_logout" raised disabled$="[[_inProgress]]" on-tap="_userLogout">
-            <iron-icon class="btn_logout_icon" icon="icons:logout"></iron-icon>
+            <iron-icon class="btn_logout_icon" icon="exit-to-app"></iron-icon>
             <span class="btn_logout_text">Déconnexion</span>
             <paper-progress class="bar_progress" hidden$="[[!_inProgress]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
           </paper-button>
@@ -1049,7 +1055,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * Révèle le mot de passe en basculant le type au texte
        */
       _revealPW(e) {
-        this.shadowRoot.querySelector('#passwordIconButton').icon = 'icons:visibility-off';
+        this.shadowRoot.querySelector('#passwordIconButton').icon = 'visibility-off';
         this.shadowRoot.querySelector('#passwordInput').type = 'text';
       }
 
@@ -1059,7 +1065,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        */
       _hidePW(e) {
         setTimeout(function() {
-          this.shadowRoot.querySelector('#passwordIconButton').icon = 'icons:visibility';
+          this.shadowRoot.querySelector('#passwordIconButton').icon = 'visibility';
           this.shadowRoot.querySelector('#passwordInput').type = 'password';
         }.bind(this), 1000)
       }

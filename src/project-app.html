@@ -440,7 +440,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-icon-button icon="arrow-back" aria-label="Go back"></paper-icon-button>
             </a>
           </div>
-          <div class="layout horizontal center-center" main-title>
+
+          <div class="layout horizontal center-center flex">
             <a href="/" aria-label="Project Home">
               <iron-image id="header_logo" src="../images/logo.svg" preload sizing="contain"></iron-image>
             </a>
@@ -832,8 +833,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // Handle des erreurs.
           var errorCode = error.code;
           var errorMessage = error.message;
-          
-          console.log(error);
         });
       }
 

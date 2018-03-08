@@ -10,11 +10,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="project-category-data.html">
 <link rel="import" href="project-common-styles.html">
 <link rel="import" href="project-image.html">
 <link rel="import" href="project-list-item.html">
+
+<link rel="import" href="elements/item-card.html">
 
 <dom-module id="project-list">
 
@@ -22,22 +25,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <style include="project-common-styles">
 
-      .hero-image {
+      :host {
+        display: block;
         position: relative;
-        height: 320px;
-        overflow: hidden;
-        margin-bottom: 32px;
-      }
-
-      .hero-image {
-        --project-image-img: {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: -9999px;
-          right: -9999px;
-          max-width: none;
-        };
+        --app-grid-columns: 5;
+        --app-grid-gutter: 8px;
+        @apply(--layout-vertical);
+        @apply(--layout-center);
       }
 
       .grid {
@@ -62,6 +56,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-decoration: none;
       }
 
+      @media (max-width: 900px) {
+        :host {
+          --app-grid-columns: 3;
+        }
+      }
       @media (max-width: 767px) {
         .hero-image {
           display: none;
@@ -73,16 +72,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           max-width: 50%;
         }
       }
+      @media (max-width: 500px) {
+        :host {
+          --app-grid-columns: 1;
+        }
+      }
 
     </style>
 
-    <!--
-      app-route provides the name of the category.
-    -->
+    <!-- L'éléments app-route fournit le nom de la catégorie. -->
     <app-route
         route="[[route]]"
         pattern="/:category"
         data="{{routeData}}"></app-route>
+
+    <!-- Ajax qui permet de consulter l'API YouTube -->
+    <iron-ajax
+      id="ajax"
+      url="https://www.googleapis.com/youtube/v3/search"
+      handle-as="json"
+      on-response="_handleResponse"
+      debounce-duration="300">
+    </iron-ajax>
 
     <!--
       project-category-data provides the category data for a given category name.
@@ -93,7 +104,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         category="{{category}}"
         failure="{{failure}}"></project-category-data>
 
-    <project-image
+    <div class="app-grid">
+      <!-- Looper l'array obtenu à partir de la requête à l'API YouTube -->
+      <template is="dom-repeat" items="{{youtube}}" as="video">
+        <item-card
+          url="[[recipe.url]]"
+          image="[[video.snippet.thumbnails.high.url]]"
+          title="[[video.snippet.title]]"
+          date="[[video.snippet.publishedAt]]"
+          description="[[video.snippet.description]]"
+          channel-id="[[video.snippet.channelId]]"
+          channel-title="[[video.snippet.channelTitle]]" >
+        </item-card>
+      </template>
+    </div>
+
+
+    <!-- <project-image
         alt="[[category.title]]"
         src="[[category.image]]"
         placeholder-img="[[category.placeholder]]" class="hero-image"></project-image>
@@ -101,7 +128,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <header>
       <h1>[[category.title]]</h1>
       <span>[[_getPluralizedQuantity(category.items.length)]]</span>
-    </header>
+    </header> -->
 
     <ul class="grid" hidden$="[[failure]]">
       <dom-repeat items="[[_getListItems(category.items)]]" initial-count="4">
@@ -137,6 +164,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         route: Object,
 
         routeData: Object,
+
+        youtube: Array,
 
         visible: {
           type: Boolean,
@@ -198,6 +227,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   category: category.name,
                   title: category.title
                 }}));
+
+              // Lorsque la catégorie change, une nouvelle requête est lancée
+              // sur l'API YouTube avec l'id de la catégorie
+              this.$.ajax.params = {
+                part: "snippet",
+                key: "AIzaSyBNZJJG60vZVode3qiREesllCTg8a3r8lw",
+                type: "video",
+                videoCategoryId: this.category.id
+              };
+              this.$.ajax.generateRequest();
             } else {
               this.dispatchEvent(new CustomEvent('show-invalid-url-warning', {
                 bubbles: true, composed: true}));
@@ -213,6 +252,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (!offline && this.isAttached) {
           this._tryReconnect();
         }
+      }
+
+      _handleResponse(data) {
+        this.youtube = data.detail.response.items;
       }
 
     }

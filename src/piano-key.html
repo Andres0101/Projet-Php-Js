@@ -1,0 +1,178 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
+
+<dom-module id="piano-key">
+
+  <template>
+
+    <style>
+      :host {
+        display: inline-block;
+        position: relative;
+        width: 100px;
+        height: 100px;
+
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+
+        border-radius: 50%;
+        background-color: rgba(0,0,0,0.02);
+
+        -webkit-box-shadow: inset 0px 0px 3px -1px rgba(0,0,0,0.2);
+        -moz-box-shadow: inset 0px 0px 3px -1px rgba(0,0,0,0.2);
+        box-shadow: inset 0px 0px 3px -1px rgba(0,0,0,0.2);
+
+        margin: 2px;
+
+        cursor: pointer;
+      }
+
+      #ripple {
+        opacity: 0.5;
+      }
+
+      div {
+        position: absolute;
+        top:43px;
+        left:45px;
+        text-transform: uppercase;
+        color: rgba(0,0,0,0.4);
+      }
+
+      @media (max-width: 1200px) {
+        :host {
+          width: 80px;
+          height: 80px;
+        }
+        div {
+          top:33px;
+          left:34px;
+        }
+      }
+
+    </style>
+
+    <paper-ripple id="ripple" class="circle" center></paper-ripple>
+    <div>[[id]]</div>
+
+  </template>
+
+  <script>
+
+    class PianoKey extends Polymer.Element {
+
+      static get is() { return 'piano-key'; }
+
+      static get properties() { return {
+        /**
+         * Valeur de la touche du clavier.
+         *
+         * @type {String}
+         */
+        id: {
+          type: String
+        }
+      }}
+
+      ready() {
+        super.ready();
+
+        // Listener qui permet cliquer les lettres du piano
+        this.addEventListener('tap', (e)=>this._regularTap());
+      }
+
+      _regularTap() {
+        // Switch qui depends de l'id de la lettre
+        switch(this.id){
+          case "a":
+            // Montrer l'effet ripple
+            this.$.ripple.simulatedRipple();
+
+            // Paramètres:
+        		// Note: la note qu'on souhaite jouer (A,B,C,D,E,F,G).
+          	// Octave: l'octave # de la note qu'on souhaite jouer
+          	// Durée: durée de la note en secondes
+            piano.play('C', 3, 3); // Joue C3 pour 3s
+
+            // Modifier la couleur du body
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#FF5252";
+            break;
+          case "z":
+            this.$.ripple.simulatedRipple();
+            piano.play('D', 3, 3);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#E040FB";
+            break;
+          case "e":
+            this.$.ripple.simulatedRipple();
+            piano.play('E', 3, 3);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#536DFE";
+            break;
+          case "r":
+            this.$.ripple.simulatedRipple();
+            piano.play('F', 3, 3);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#40C4FF";
+            break;
+          case "t":
+            this.$.ripple.simulatedRipple();
+            piano.play('G', 3, 3);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#64FFDA";
+            break;
+          case "y":
+            this.$.ripple.simulatedRipple();
+            piano.play('A', 3, 3);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#B2FF59";
+            break;
+          case "u":
+            this.$.ripple.simulatedRipple();
+            piano.play('B', 3, 3);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#FFD740";
+            break;
+          case "q":
+            this.$.ripple.simulatedRipple();
+            piano.play('C', 2, 2);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#FF4081";
+            break;
+          case "s":
+            this.$.ripple.simulatedRipple();
+            piano.play('D', 2, 2);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#7C4DFF";
+            break;
+          case "d":
+            this.$.ripple.simulatedRipple();
+            piano.play('E', 2, 2);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#448AFF";
+            break;
+          case "f":
+            this.$.ripple.simulatedRipple();
+            piano.play('F', 2, 2);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#18FFFF";
+            break;
+          case "g":
+            this.$.ripple.simulatedRipple();
+            piano.play('G', 2, 2);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#69F0AE";
+            break;
+          case "h":
+            this.$.ripple.simulatedRipple();
+            piano.play('A', 2, 2);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#EEFF41";
+            break;
+          case "j":
+            this.$.ripple.simulatedRipple();
+            piano.play('B', 2, 2);
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#FFAB40";
+            break;
+        }
+      }
+    }
+
+    customElements.define(PianoKey.is, PianoKey);
+
+  </script>
+
+</dom-module>

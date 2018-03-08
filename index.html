@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="theme-color" content="#fff">
   <link rel="manifest" href="manifest.json">
 
+  <!-- Librairie Firebase -->
   <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-auth.js"></script>
@@ -44,6 +45,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     var provider = new firebase.auth.GoogleAuthProvider();
   </script>
 
+  <!-- Librairie pour utiliser le piano -->
+	<script src="audiosynth.js"></script>
+  <script>
+    var piano = Synth.createInstrument('piano');
+  </script>
+
   <style>
 
     body {
@@ -52,7 +59,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       font-size: 13px;
       line-height: 1.5;
       min-height: 100vh;
-      background-color: var(--paper-light-blue-900);
+      background-color: var(--paper-grey-100);
     }
 
     /* Style pour le rendu pendant le chargement des ressources */

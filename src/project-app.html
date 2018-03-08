@@ -57,6 +57,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       #login_form {
         background-color: white;
+        box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.07), 0 3px 14px 2px rgba(0, 0, 0, 0.06), 0 5px 5px -3px rgba(0, 0, 0, 0.1);
         padding: 40px 80px;
       }
 
@@ -83,7 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .div_line {
-        background-color: var(--paper-grey-500);
+        background-color: var(--paper-grey-300);
         height: 1px;
         margin: 50px 0;
         min-width: 300px;
@@ -366,7 +367,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <template is="dom-if" if="[[showSignUp]]">
               <paper-input id="repeatPasswordInput"
                 type="password"
-                label="Re-enter Password"
+                label="Ré-entrer le mot de passe"
                 value="{{_passwordAgain}}"
                 error-message="Les mots de passe ne correspondent pas"
                 on-keydown="_submitOnEnter"
@@ -508,7 +509,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
         <!-- home view -->
-        <project-home name="home" categories="[[categories]]"></project-home>
+        <project-home name="home" enabled=[[enable]]></project-home>
         <!-- list view of items in a category -->
         <project-list name="list" route="[[subroute]]" offline="[[offline]]"></project-list>
         <!-- detail view of one item -->
@@ -522,7 +523,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </iron-pages>
     </template>
 
-    <!-- Montrer les messages de l'application -->
+    <!-- Afficher les messages de l'application -->
     <paper-toast id="toast"></paper-toast>
 
     <!-- a11y announcer -->
@@ -535,7 +536,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // Performance de connexion
     window.performance && performance.mark && performance.mark('project-app - before register');
 
-    class ShopApp extends Polymer.Element {
+    class ProjectApp extends Polymer.Element {
 
       static get is() { return 'project-app'; }
 
@@ -650,6 +651,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: false
         },
 
+        /**
+         * `True` lorsqu'on est dans la page d'accueil, sinon `false`.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        enable: {
+          type: Boolean,
+          value: false
+        },
+
         _shouldShowTabs: {
           computed: '_computeShouldShowTabs(page, smallScreen)'
         },
@@ -719,10 +731,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // home route is eagerly loaded
           if (page == 'home') {
             this._pageLoaded(Boolean(oldPage));
-          // other routes are lazy loaded
+            this.enable = true;
           } else {
-            // When a load failed, it triggered a 404 which means we need to
-            // eagerly load the 404 page definition
+            this.enable = false;
+            // Modifier la couleur du body
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#F5F5F5";
+
+            // Quand un chargement échoue, il déclenche un 404, ce qui signifie
+            // qu'on doit charger la définition à la page 404
             let cb = this._pageLoaded.bind(this, Boolean(oldPage));
             Polymer.importHref(
               this.resolveUrl('project-' + page + '.html'),
@@ -734,10 +750,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _pageLoaded(shouldResetLayout) {
         this._ensureLazyLoaded();
         if (shouldResetLayout) {
-          // The size of the header depends on the page (e.g. on some pages the tabs
-          // do not appear), so reset the header's layout only when switching pages.
+          // La taille de l'header dépend de la page (par exemple sur certaines pages,
+          // les onglets n'apparaissent pas), donc réinitialisez la mise en page
+          // de l'header uniquement lors du changement de page.
           Polymer.Async.timeOut.run(() => {
-            this.$.header.resetLayout();
+            this.shadowRoot.querySelector('#header').resetLayout();
           }, 1);
         }
       }
@@ -835,7 +852,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 // Modifier paper-toast texte
                 this.$.toast.text = "Le mot de passe est invalide";
               }
-              // Montrer paper-toast
+              // Afficher paper-toast
               this.$.toast.show();
               this._cleanPasswordInput();
             }.bind(this));
@@ -850,6 +867,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // Les informations d'utilisateur connecté.
           var user = result.user;
 
+          // Sauvegarde dans la BDD l'info de l'utilisateur qui vient de se connecter
           database.ref('users/' + user.uid).set({
             name: user.displayName,
             email: user.email,
@@ -871,13 +889,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var p = this.shadowRoot.querySelector('#passwordInput').validate();
 
         this.shadowRoot.querySelector('#repeatPasswordInput').invalid = false;
+        // La valeur du champ 'Ré-entrer le mot de passe' doit être égale à la valeur
+        // du champ 'Mot de passe'
         var pRepeat = this.password == this._passwordAgain &&
           this.shadowRoot.querySelector('#repeatPasswordInput').validate();
 
+        // Valider que les 3 champs d'inscriptions sont complets
         if (e && p && pRepeat) {
           this._inProgress = true;
           firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
             .then(function (user) {
+              // Sauvegarde dans la BDD l'info de l'utilisateur qui vient de se connecter
               database.ref('users/' + user.uid).set({
                 name: user.email,
                 email: user.email,
@@ -909,7 +931,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 // Modifier paper-toast texte
                 this.$.toast.text = "Le mot de passe doit contenir au moins 6 caractères";
               }
-              // Montrer paper-toast
+              // Afficher paper-toast
               this.$.toast.show();
               this._cleanPasswordInput();
             }.bind(this));
@@ -973,6 +995,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             // Vider la variable qui contient l'information de la session
             this.set('userInfo', []);
+            // Modifier la couleur du body
+            document.getElementsByTagName('body')[0].style.backgroundColor = "#F5F5F5";
+
+            // Valider si l'utilisateur a été déconnecté d'une autre page
+            // différente de la page home
+            if (location.pathname != "/") {
+              // Supprimer la queue de l'url
+              location.href = "/";
+            }
           }.bind(this))
           .catch(function(error) {});
       }
@@ -1114,7 +1145,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     }
 
-    customElements.define(ShopApp.is, ShopApp);
+    customElements.define(ProjectApp.is, ProjectApp);
 
   </script>
 

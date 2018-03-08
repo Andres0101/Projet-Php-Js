@@ -9,141 +9,132 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="project-button.html">
-<link rel="import" href="project-image.html">
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="piano-key.html">
 
 <dom-module id="project-home">
 
   <template>
 
-    <style include="project-button">
-
-      .image-link {
-        outline: none;
+    <style include="project-common-styles">
+      :host {
+        margin-top: 100px;
+        color: rgba(0, 0, 0, 0.3);
+        @apply(--layout-vertical);
+        @apply(--layout-center);
       }
 
-      .image-link > project-image::after {
-        display: block;
-        content: '';
-        position: absolute;
-        transition-property: opacity;
-        transition-duration: 0s;
-        transition-delay: 90ms;
-        pointer-events: none;
-        opacity: 0;
-        top: 5px;
-        left: 5px;
-        right: 5px;
-        bottom: 5px;
-        outline: #2196F3 auto 5px;
-        outline: -moz-mac-focusring auto 5px;
-        outline: -webkit-focus-ring-color auto 5px;
+      .text {
+        margin-top: 100px;
       }
-
-      .image-link:focus > project-image::after {
-        opacity: 1;
-      }
-
-      .item {
-        display: block;
-        text-decoration: none;
-        text-align: center;
-        margin-bottom: 40px;
-      }
-
-      .item:nth-of-type(3),
-      .item:nth-of-type(4) {
-        display: inline-block;
-        width: 50%;
-      }
-
-      project-image {
-        position: relative;
-        height: 320px;
-        overflow: hidden;
-        --project-image-img: {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: -9999px;
-          right: -9999px;
-          max-width: none;
-        };
-      }
-
-      h2 {
-        font-size: 1.3em;
-        font-weight: 500;
-        margin: 32px 0;
-      }
-
-      .item:nth-of-type(3) > h2,
-      .item:nth-of-type(4) > h2 {
-        font-size: 1.1em;
-      }
-
-      @media (max-width: 767px) {
-        project-image {
-          height: 240px;
-        }
-
-        h2 {
-          margin: 24px 0;
-        }
-
-        .item:nth-of-type(3) > project-button > a,
-        .item:nth-of-type(4) > project-button > a {
-          padding: 8px 24px;
-        }
-      }
-
     </style>
 
-    <dom-repeat items="[[categories]]">
-      <template strip-whitespace>
-        <div class="item">
-          <a class="image-link" href$="/list/[[item.name]]">
-            <project-image src="[[item.image]]" alt="[[item.title]]" placeholder-img="[[item.placeholder]]"></project-image>
-          </a>
-          <h2>[[item.title]]</h2>
-          <project-button>
-            <a aria-label$="[[item.title]] Shop Now" href$="/list/[[item.name]]">Shop Now</a>
-          </project-button>
-        </div>
-      </template>
-    </dom-repeat>
+    <div class="layout horizontal">
+      <piano-key id="a"></piano-key>
+      <piano-key id="z"></piano-key>
+      <piano-key id="e"></piano-key>
+      <piano-key id="r"></piano-key>
+      <piano-key id="t"></piano-key>
+      <piano-key id="y"></piano-key>
+      <piano-key id="u"></piano-key>
+    </div>
+    <div class="layout horizontal">
+      <piano-key id="q"></piano-key>
+      <piano-key id="s"></piano-key>
+      <piano-key id="d"></piano-key>
+      <piano-key id="f"></piano-key>
+      <piano-key id="g"></piano-key>
+      <piano-key id="h"></piano-key>
+      <piano-key id="j"></piano-key>
+    </div>
+
+    <div class="text paper-font-body1">Et ceci? Juste un piano. Amusez-vous.</div>
+
+    <iron-a11y-keys keys="a z e r t y u q s d f g h j" target="[[target]]" on-keys-pressed="_updatePressed"></iron-a11y-keys>
 
   </template>
 
   <script>
 
-    class ShopHome extends Polymer.Element {
+    class ProjectHome extends Polymer.Element {
 
       static get is() { return 'project-home'; }
 
       static get properties() { return {
 
-        categories: {
-          type: Array
+        target: {
+          type: Object,
+          value: () => {
+            return document.body;
+          }
         },
 
-        visible: {
+        /**
+         * Attribut de l'élément qui obtient la valeur via project-app
+         *
+         * @type {Boolean}
+         */
+        enabled: {
           type: Boolean,
-          observer: '_visibleChanged'
+          notify: true
         }
 
       }}
 
-      _visibleChanged(visible) {
-        if (visible) {
-          this.dispatchEvent(new CustomEvent('change-section', {
-            bubbles: true, composed: true, detail: {title: 'Home'}}));
+      _updatePressed(event) {
+        if(this.enabled) {
+          // Switch qui depends de la touche du clavier
+          switch(event.detail.combo) {
+            case "a":
+              // Appelle à la méthode _regularTap() de piano-key
+              this.$.a._regularTap();
+              break;
+            case "z":
+              this.$.z._regularTap();
+              break;
+            case "e":
+              this.$.e._regularTap();
+              break;
+            case "r":
+              this.$.r._regularTap();
+              break;
+            case "t":
+              this.$.t._regularTap();
+              break;
+            case "y":
+              this.$.y._regularTap();
+              break;
+            case "u":
+              this.$.u._regularTap();
+              break;
+
+            case "q":
+              this.$.q._regularTap();
+              break;
+            case "s":
+              this.$.s._regularTap();
+              break;
+            case "d":
+              this.$.d._regularTap();
+              break;
+            case "f":
+              this.$.f._regularTap();
+              break;
+            case "g":
+              this.$.g._regularTap();
+              break;
+            case "h":
+              this.$.h._regularTap();
+              break;
+            case "j":
+              this.$.j._regularTap();
+              break;
+          }
         }
       }
-
     }
 
-    customElements.define(ShopHome.is, ShopHome);
+    customElements.define(ProjectHome.is, ProjectHome);
 
   </script>
 

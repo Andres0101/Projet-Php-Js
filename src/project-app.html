@@ -15,19 +15,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
-<link rel="import" href="project-category-data.html">
 
+<link rel="import" href="project-category-data.html">
 <link rel="import" href="project-common-styles.html">
 <link rel="import" href="my-icons.html">
 <link rel="import" href="project-home.html">
@@ -189,7 +194,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       #tabContainer {
         position: relative;
-        height: 66px;
+      }
+      #tabContainer paper-tabs {
+        padding: 0 20%;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 54px;
+        font-size: 16px;
+        --paper-tabs-selection-bar:{
+          border-bottom: 3px solid var(--app-primary-color);
+        }
+      }
+      #tabContainer paper-tab {
+        color: var(--app-secondary-color);
+        --paper-tab-ink: #aaa;
+        width: 100%;
+      }
+      #tabContainer paper-tab.iron-selected {
+        color: var(--app-primary-color);
+      }
+      #tabContainer paper-tab iron-icon {
+        margin-right: 20px;
       }
 
       project-tabs, project-tab {
@@ -472,21 +497,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <!-- Lazy-create the tabs for larger screen sizes. -->
         <div id="tabContainer" sticky$="[[_shouldShowTabs]]" hidden$="[[!_shouldShowTabs]]">
-          <dom-if if="[[_shouldRenderTabs]]">
-            <template>
-              <project-tabs
-                  selected="[[categoryName]]"
-                  attr-for-selected="name">
-                <dom-repeat items="[[categories]]" as="category" initial-count="4">
-                  <template>
-                  <project-tab name="[[category.name]]">
-                    <a href="/list/[[category.name]]">[[category.title]]</a>
-                  </project-tab>
-                  </template>
-                </dom-repeat>
-              </project-tabs>
-            </template>
-          </dom-if>
+          <template is="dom-if" if="[[_shouldRenderTabs]]" restamp="true">
+            <paper-tabs selected="[[categoryName]]" attr-for-selected="name" role="navigation">
+              <paper-tab name="films" link>
+                <a class="link" href="/list/films" tabindex="-1">
+                  <iron-icon icon="maps:local-movies"></iron-icon>
+                  Films
+                </a>
+              </paper-tab>
+              <paper-tab name="music" link>
+                <a class="link" href="/list/music" tabindex="-1">
+                  <iron-icon icon="image:music-note"></iron-icon>
+                  Music
+                </a>
+              </paper-tab>
+              <paper-tab name="sports" link>
+                <a class="link" href="/list/sports" tabindex="-1">
+                  <iron-icon icon="maps:directions-run"></iron-icon>
+                  Sports
+                </a>
+              </paper-tab>
+            </paper-tabs>
+          </template>
         </div>
       </app-header>
 
@@ -496,11 +528,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- Two-way bind `drawerOpened` since app-drawer can update `opened` itself. -->
         <app-drawer opened="{{drawerOpened}}" swipe-open tabindex="0">
           <iron-selector role="navigation" class="drawer-list" selected="[[categoryName]]" attr-for-selected="name">
-            <dom-repeat items="[[categories]]" as="category" initial-count="4">
-              <template>
-                <a name="[[category.name]]" href="/list/[[category.name]]">[[category.title]]</a>
-              </template>
-            </dom-repeat>
+            <a class="link" name="films" href="/list/films" tabindex="-1">
+              Films
+            </a>
+            <a class="link" name="music" href="/list/music" tabindex="-1">
+              Music
+            </a>
+            <a class="link" name="sports" href="/list/sports" tabindex="-1">
+              Sports
+            </a>
           </iron-selector>
         </app-drawer>
         </template>

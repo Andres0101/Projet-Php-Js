@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="project-category-data.html">
 <link rel="import" href="project-common-styles.html">
 
@@ -33,42 +34,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply --layout-center;
       }
 
-      .grid {
-        @apply --layout-horizontal;
-        @apply --layout-wrap;
-        @apply --layout-justified;
-        margin: 0 10px 32px 10px;
-        padding: 0;
-        list-style: none;
+      .pagination {
+        margin: 20px 0;
       }
 
-      .grid li {
-        -webkit-flex: 1 1;
-        flex: 1 1;
-        -webkit-flex-basis: 33%;
-        flex-basis: 33%;
-        max-width: 33%;
-      }
-
-      .grid a {
-        display:block;
-        text-decoration: none;
+      .bar_progress  {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        border-radius: 0px 0px 3px 3px;
+        --paper-progress-active-color: var(--paper-light-blue-600);
+        --paper-progress-secondary-color: var(--paper-light-blue-600);
       }
 
       @media (max-width: 900px) {
         :host {
           --app-grid-columns: 3;
-        }
-      }
-      @media (max-width: 767px) {
-        .hero-image {
-          display: none;
-        }
-
-        .grid  li {
-          -webkit-flex-basis: 50%;
-          flex-basis: 50%;
-          max-width: 50%;
         }
       }
       @media (max-width: 500px) {
@@ -118,6 +100,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </div>
 
+    <div class="pagination layout horizontal center-center">
+      <paper-button raised on-tap="_prevPageLoad" disabled$="[[!prevPage]]">
+        Précédent
+        <paper-progress class="bar_progress" hidden$="[[!_inProgressPrev]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
+      </paper-button>
+      <paper-button raised on-tap='_nextPageLoad' disabled$="[[!nextPage]]">
+        Suivant
+        <paper-progress class="bar_progress" hidden$="[[!_inProgressNext]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
+      </paper-button>
+    </div>
+
     <!--
       project-network-warning shows a warning message when the items can't be rendered due
       to network conditions.
@@ -144,6 +137,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         routeData: Object,
 
         youtube: Array,
+
+        /**
+         * Valeur de la page précédent dans la requête de l'API YouTube.
+         *
+         * @type {String}
+         * @default ''
+         */
+        prevPage: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * Valeur de la page suivant dans la requête de l'API YouTube.
+         *
+         * @type {String}
+         * @default ''
+         */
+        nextPage: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * Indique si le processus de chargement de la page précédent est en cours.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        _inProgressPrev: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Indique si le processus de chargement de la page suivant est en cours.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        _inProgressNext: {
+          type: Boolean,
+          value: false
+        },
 
         visible: {
           type: Boolean,
@@ -223,8 +260,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _handleResponse(data) {
+        this._inProgressPrev = false;
+        this._inProgressNext = false;
+
         // Handler la reponse de la requête ajax.
+        this.prevPage = data.detail.response.prevPageToken
+        this.nextPage = data.detail.response.nextPageToken;
+
         this.youtube = data.detail.response.items;
+      }
+
+      _prevPageLoad() {
+        this._inProgressPrev = true;
+
+        // Remplacez le token de la valeur pageToken par le token de la page précédente
+        this.$.ajax.params.pageToken = this.prevPage;
+        this.$.ajax.generateRequest();
+      }
+
+      _nextPageLoad() {
+        this._inProgressNext = true;
+
+        // Remplacez le token de la valeur pageToken par le token de la page suivant
+        this.$.ajax.params.pageToken = this.nextPage;
+        this.$.ajax.generateRequest();
       }
 
       _tryReconnect() {

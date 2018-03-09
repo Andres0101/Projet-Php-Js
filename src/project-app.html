@@ -874,7 +874,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }.bind(this))
             .catch(function (error) {
               var errorCode = error.code;
-              var errorMessage = error.message;
 
               // Lorsqu'un erreur a été détecté, on modifie l'indicateur _inProgress à false
               this._inProgress = false;
@@ -912,7 +911,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }.bind(this)).catch(function(error) {
           // Handle des erreurs.
           var errorCode = error.code;
-          var errorMessage = error.message;
         });
       }
 
@@ -950,7 +948,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }.bind(this))
             .catch(function (error) {
               var errorCode = error.code;
-              var errorMessage = error.message;
 
               // Lorsqu'un erreur a été détecté, on modifie l'indicateur _inProgress à false
               this._inProgress = false;
@@ -987,20 +984,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * l'utilisateur clique sur le lien pour réinitialiser son mot de passe.
        */
       _resetPassword() {
-        e = this.shadowRoot.querySelector('#emailInput').validate()
+        var e = this.shadowRoot.querySelector('#emailInput').validate();
         if (e) {
           this._inProgress = true;
-          this.shadowRoot.querySelector('#auth').auth.sendPasswordResetEmail(this.email)
+          firebase.auth().sendPasswordResetEmail(this.email)
             .then(function() {
               this.$.toast.text = "La réinitialisation du mot de passe a été envoyée. Veuillez vérifier votre boîte de réception.";
               this.$.toast.show();
-            }.bind(this), function(error) {
-              this.$.toast.text = error.message;
-              this.$.toast.show();
-            }.bind(this))
-            .finally(function(){
-              // Définissez _inProgress sur false une fois que tout est terminé
+
+              // En envoyant l'email de réinitialisation de mot de passe,
+              // on modifie l'indicateur _inProgress à false
               this._inProgress = false;
+              // on affiche le formulaire du login
+              this.showResetPW = false;
+              // on nettoie les inputs de formulaire
+              this._cleanInputs();
+            }.bind(this))
+            .catch(function (error) {
+              var errorCode = error.code;
+
+              // Lorsqu'un erreur a été détecté, on modifie l'indicateur _inProgress à false
+              this._inProgress = false;
+
+              if (errorCode == "auth/user-not-found") { // Utilisateur invalide
+                // Modifier paper-toast texte
+                this.$.toast.text = "Il n'y a pas d'enregistrement utilisateur correspondant à cet identifiant";
+              }
+
+              // Afficher paper-toast
+              this.$.toast.show();
+              // Nettoie les inputs de formulaire
+              this._cleanInputs();
             }.bind(this));
         }
       }

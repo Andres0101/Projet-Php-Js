@@ -21,13 +21,13 @@
         height: 100%;
         border-radius: 2px;
         overflow: hidden;
-        @apply(--shadow-elevation-2dp);
-        @apply(--shadow-transition);
-        @apply(--layout-vertical);
+        @apply --shadow-elevation-2dp;
+        @apply --shadow-transition;
+        @apply --layout-vertical;
         border-bottom: 2px solid var(--app-secondary-color);
       }
       .plan_card:hover {
-        @apply(--shadow-elevation-6dp);
+        @apply --shadow-elevation-6dp;
       }
       .image {
         background-color: #eee;
@@ -152,7 +152,7 @@
         // Transformation au format UTC (ex: Mon, 05 Feb 2018...)
         d = d.toUTCString();
         // Obtenir seulement la date de publication (ex: 05 Feb 2018)
-        d = d.slice(5, 16),
+        d = d.slice(5, 16);
 
         // Mettre à jour la variable date
         this.date = d;

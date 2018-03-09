@@ -28,10 +28,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
         position: relative;
+        margin: 50px 0;
         --app-grid-columns: 5;
         --app-grid-gutter: 8px;
-        @apply(--layout-vertical);
-        @apply(--layout-center);
+        @apply --layout-vertical;
+        @apply --layout-center;
       }
 
       .grid {
@@ -108,7 +109,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Looper l'array obtenu à partir de la requête à l'API YouTube -->
       <template is="dom-repeat" items="{{youtube}}" as="video">
         <item-card
-          url="[[recipe.url]]"
+          url="[[_getItemHref(video.id.videoId)]]"
           image="[[video.snippet.thumbnails.high.url]]"
           title="[[video.snippet.title]]"
           date="[[video.snippet.publishedAt]]"
@@ -118,27 +119,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </item-card>
       </template>
     </div>
-
-
-    <!-- <project-image
-        alt="[[category.title]]"
-        src="[[category.image]]"
-        placeholder-img="[[category.placeholder]]" class="hero-image"></project-image>
-
-    <header>
-      <h1>[[category.title]]</h1>
-      <span>[[_getPluralizedQuantity(category.items.length)]]</span>
-    </header> -->
-
-    <ul class="grid" hidden$="[[failure]]">
-      <dom-repeat items="[[_getListItems(category.items)]]" initial-count="4">
-        <template>
-          <li>
-            <a href$="[[_getItemHref(item)]]"><project-list-item item="[[item]]"></project-list-item></a>
-          </li>
-        </template>
-      </dom-repeat>
-    </ul>
 
     <!--
       project-network-warning shows a warning message when the items can't be rendered due
@@ -200,10 +180,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return items || [{},{},{},{},{},{},{},{},{},{}];
       }
 
-      _getItemHref(item) {
-        // By returning null when `itemId` is undefined, the href attribute won't be set and
-        // the link will be disabled.
-        return item.name ? ['/detail', this.category.name, item.name].join('/') : null;
+      _getItemHref(videoId) {
+        // En renvoyant null lorsque `videoId` n'est pas défini, l'attribut href
+        // ne sera pas défini et le lien sera désactivé.
+        return videoId ? ['/detail', this.category.name, videoId].join('/') : null;
       }
 
       _getPluralizedQuantity(quantity) {
@@ -244,6 +224,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
       }
 
+      _handleResponse(data) {
+        // Handler la reponse de la requête ajax.
+        this.youtube = data.detail.response.items;
+      }
+
       _tryReconnect() {
         this.$.categoryData.refresh();
       }
@@ -252,10 +237,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (!offline && this.isAttached) {
           this._tryReconnect();
         }
-      }
-
-      _handleResponse(data) {
-        this.youtube = data.detail.response.items;
       }
 
     }

@@ -10,123 +10,133 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/google-youtube/google-youtube.html">
 <link rel="import" href="project-button.html">
 <link rel="import" href="project-category-data.html">
 <link rel="import" href="project-common-styles.html">
-<link rel="import" href="project-image.html">
-<link rel="import" href="project-select.html">
 
 <dom-module id="project-detail">
 
   <template>
 
-    <style include="project-common-styles project-button project-select">
+    <style include="project-common-styles project-button">
 
       :host {
-        display: block;
+        @apply --layout-vertical;
+        @apply --layout-center;
+        margin: 20px 0;
       }
 
-      #content {
+      .cards_container{
+        width: 100%;
+        max-width: 1200px;
+      }
+      #video {
+        width: 80%;
+      }
+      #info_video {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 20px 0;
+        padding: 10px;
+      }
+      #cover {
+        min-width: 180px;
+        height: 250px;
+        margin-right: 20px;
+      }
+      #video_text {
+        width: 64%;
+      }
+      #title {
+        color: var(--paper-grey-800);
+        margin-bottom: 14px;
+      }
+      #description_title,
+      #details_title {
+        color: var(--paper-grey-700);
+      }
+      #description_title {
+        margin-bottom: 4px;
+      }
+      #description_text {
+        color: var(--paper-grey-600);
+        white-space: pre-line;
+      }
+
+      /* Tags */
+      .info_row {
         @apply --layout-horizontal;
         @apply --layout-center-justified;
-      }
-
-      project-image {
-        position: relative;
-        margin: 64px 32px;
-        width: 50%;
-        max-width: 600px;
-        --project-image-img: {
-          @apply --layout-fit;
-        };
-      }
-
-      project-image::before {
-        content: "";
         display: block;
-        padding-top: 100%;
+        padding: 20px;
+        width: 80%;
+        margin-bottom: 50px;
       }
-
-      .detail {
-        margin: 64px 32px;
-        width: 50%;
-        max-width: 400px;
-        transition: opacity 0.4s;
-        opacity: 0;
+      .info_item{
+        padding: 10px 5px;
       }
-
-      .detail[has-content] {
-        opacity: 1;
+      .info_item p {
+        width: 100%;
+        max-width: 600px;
+        color: #666;
       }
-
-      h1 {
-        font-size: 24px;
-        font-weight: 500;
-        line-height: 28px;
-        margin: 0;
+      .section_title {
+        color: var(--app-secondary-color);
+        margin: 12px 0;
       }
-
-      .price {
-        margin: 16px 0 40px;
-        font-size: 16px;
+      .section_title iron-icon {
         color: var(--app-secondary-color);
       }
-
-      .description {
-        margin: 32px 0;
+      .tag_item {
+        background-color: var(--paper-grey-200);
+        color: #888;
+        padding: 6px 12px;
+        margin: 2px;
+        border-radius: 20px;
+        cursor: default;
       }
 
-      .description > h2 {
-        margin: 16px 0;
-        font-size: 13px;
-      }
-
-      .description > p {
-        margin: 0;
-        color: var(--app-secondary-color);
-      }
-
-      .pickers {
-        @apply --layout-vertical;
-        border-top: 1px solid #ccc;
-      }
-
-      project-select > select {
-        font-size: 16px;
-        padding: 16px 24px 16px 70px;
-      }
-
-      @media (max-width: 767px) {
-
-        #content {
-          @apply --layout-vertical;
-          @apply --layout-center;
-        }
-
-        project-image {
-          margin: 0;
-          width: 80%;
-        }
-
-        .detail {
-          box-sizing: border-box;
-          margin: 32px 0;
-          padding: 0 24px;
+      @media (max-width: 1100px) {
+        #video {
           width: 100%;
-          max-width: 600px;
         }
-
-        h1 {
-          font-size: 20px;
-          line-height: 24px;
+      }
+      @media (max-width: 767px) {
+        .info_row {
+          width: 100%;
         }
-
-        .price {
-          font-size: inherit;
-          margin: 12px 0 32px;
+      }
+      @media (max-width: 680px) {
+        #info_video {
+          padding: 4px 10px;
         }
-
+        #cover {
+          display: none;
+        }
+        #video_text {
+          width: 100%;
+        }
+        #title {
+          font-size: 22px;
+        }
+        #description_title,
+        #details_title {
+          font-size: 16px;
+        }
+        #description_text {
+          font-size: 13px;
+          line-height: 16px;
+        }
+      }
+      @media (max-width: 600px) {
+        .info_row {
+          @apply --layout-vertical;
+          padding: 10px;
+          width: 100%;
+        }
       }
 
     </style>
@@ -139,6 +149,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         pattern="/:category/:item"
         data="{{routeData}}"></app-route>
 
+    <!-- Ajax qui permet de consulter l'API YouTube -->
+    <iron-ajax
+      id="ajax"
+      url="https://www.googleapis.com/youtube/v3/videos"
+      handle-as="json"
+      on-response="_handleResponse"
+      debounce-duration="300">
+    </iron-ajax>
+
     <!--
       project-category-data provides the item data for a given category and item name.
     -->
@@ -149,48 +168,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         item="{{item}}"
         failure="{{failure}}"></project-category-data>
 
-    <div id="content" hidden$="[[failure]]">
-      <project-image alt="[[item.title]]" src="[[item.largeImage]]"></project-image>
-      <div class="detail" has-content$="[[_isDefined(item)]]">
-        <h1>[[item.title]]</h1>
-        <div class="price">[[_formatPrice(item.price)]]</div>
-        <div class="pickers">
-          <project-select>
-            <label id="sizeLabel" prefix>Size</label>
-            <select id="sizeSelect" aria-labelledby="sizeLabel">
-              <option value="XS">XS</option>
-              <option value="S">S</option>
-              <option value="M" selected>M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-            </select>
-            <project-md-decorator aria-hidden="true">
-              <project-underline></project-underline>
-            </project-md-decorator>
-          </project-select>
-          <project-select>
-            <label id="quantityLabel" prefix>Quantity</label>
-            <select id="quantitySelect" aria-labelledby="quantityLabel">
-              <option value="1" selected>1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
-            <project-md-decorator aria-hidden="true">
-              <project-underline></project-underline>
-            </project-md-decorator>
-          </project-select>
+    <!-- Looper l'array obtenu à partir de la requête à l'API YouTube -->
+    <template is="dom-repeat" items="{{video}}" as="info">
+      <div class="cards_container layout vertical center">
+        <google-youtube
+          id="video"
+          video-id="[[info.id]]"
+          iv_load_policy="3"
+          rel="0"
+          showinfo="0"
+          fluid>
+        </google-youtube>
+        <div id="info_video" class="layout horizontal center-justified">
+          <iron-image id="cover" src="[[info.snippet.thumbnails.high.url]]" preload fade sizing="cover"></iron-image>
+          <div id="video_text" class="layout vertical">
+            <div id="title" class="paper-font-headline">[[info.snippet.title]]</div>
+            <div id="description_title" class="paper-font-subhead">Description</div>
+            <div id="description_text" class="paper-font-body1">[[info.snippet.description]]</div>
+          </div>
         </div>
-        <div class="description">
-          <h2>Description</h2>
-          <p id="desc"></p>
-        </div>
-        <project-button responsive>
-          <button on-click="_addToCart" aria-label="Add this item to cart">Add to Cart</button>
-        </project-button>
       </div>
-    </div>
+
+      <!-- Tags -->
+      <template is="dom-if" if="[[_hasTags(info.snippet.tags)]]" restamp="true">
+        <!-- Affiche le contenu si la vidéo a des tags -->
+        <div class="info_row">
+          <div class="info_item flex">
+            <div class="section_title layout horizontal center">
+              <iron-icon icon="bookmark"></iron-icon>
+              <div class="paper-font-title">Tags</div>
+            </div>
+            <div class="layout horizontal wrap">
+              <template is="dom-repeat" items="[[info.snippet.tags]]" as="tag">
+                <div class="tag_item paper-font-body1">
+                  [[tag]]
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <project-button responsive>
+        <button on-click="_addToCart" aria-label="Add this item to cart">Add to Cart</button>
+      </project-button>
+    </template>
+
 
     <!--
       project-network-warning shows a warning message when the items can't be rendered due
@@ -211,16 +234,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get properties() { return {
 
-        item: Object,
-
         route: Object,
 
         routeData: Object,
 
-        visible: {
-          type: Boolean,
-          value: false
-        },
+        video: Array,
 
         offline: {
           type: Boolean,
@@ -232,39 +250,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }}
 
       static get observers() { return [
-        '_itemChanged(item, visible)'
+        '_routeChanged(routeData)'
       ]}
 
-      _itemChanged(item, visible) {
-        if (visible) {
-          this._itemChangeDebouncer = Polymer.Debouncer.debounce(this._itemChangeDebouncer,
-            Polymer.Async.microTask, () => {
-              // The item description contains escaped HTML (e.g. "&lt;br&gt;"), so we need to
-              // unescape it ("<br>") and set it as innerHTML.
-              let text = item ? item.description : '';
-              this.$.desc.innerHTML = this._unescapeText(text);
-
-              // Reset the select menus.
-              this.$.quantitySelect.value = '1';
-              this.$.sizeSelect.value = 'M';
-
-              this.dispatchEvent(new CustomEvent('change-section', {
-                bubbles: true, composed: true, detail: {
-                  category: item ? item.category : '',
-                  title: item ? item.title : ''
-                }}));
-            })
-        }
+      _routeChanged(data) {
+        // Lorsque la route change, une nouvelle requête est lancée
+        // sur l'API YouTube avec l'id de la vidéo
+        this.$.ajax.params = {
+          part: "snippet",
+          key: "AIzaSyBNZJJG60vZVode3qiREesllCTg8a3r8lw",
+          id: data.item
+        };
+        this.$.ajax.generateRequest();
       }
 
-      _unescapeText(text) {
-        let elem = document.createElement('textarea');
-        elem.innerHTML = text;
-        return elem.textContent;
+      _handleResponse(data) {
+        // Handler la reponse de la requête ajax.
+        this.video = data.detail.response.items;
       }
 
-      _formatPrice(price) {
-        return price ? '$' + price.toFixed(2) : '';
+      _hasTags(array) {
+        // Renvoie 'true' si la vidéo a des tags
+        return array != null;
       }
 
       _addToCart() {
@@ -275,10 +282,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             quantity: parseInt(this.$.quantitySelect.value, 10),
             size: this.$.sizeSelect.value
           }}));
-      }
-
-      _isDefined(item) {
-        return item != null;
       }
 
       _tryReconnect() {

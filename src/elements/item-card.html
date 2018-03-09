@@ -115,31 +115,62 @@
       static get is() { return 'item-card'; }
 
       static get properties() { return {
+
+        /**
+         * Valeur de l'URL obtenue au moyen des paramètres.
+         *
+         * @type {String}
+         * @property reflectToAttribute définie sur true pour que l'attribut
+         * correspondant soit défini sur le nœud hôte lorsque la valeur de la
+         * propriété change.
+         */
         url:{
           type: String,
           reflectToAttribute: true
         },
+        /**
+         * Valeur de l'image obtenue au moyen des paramètres.
+         *
+         * @type {String}
+         */
         image:{
           type: String,
           reflectToAttribute: true
         },
+        /**
+         * Valeur du titre obtenue au moyen des paramètres.
+         *
+         * @type {String}
+         */
         title:{
           type: String,
           reflectToAttribute: true
         },
+        /**
+         * Valeur de la date obtenue au moyen des paramètres.
+         *
+         * @type {String}
+         */
         date:{
           type: String,
           reflectToAttribute: true
         },
-        description:{
-          type: String,
-          reflectToAttribute: true
-        },
+        /**
+         * Valeur de l'id de la chaîne obtenue au moyen des paramètres.
+         *
+         * @type {String}
+         * @property observer permet de savoir quand l'attribut a changé.
+         */
         channelId: {
           type: String,
           observer: '_channelChanged',
           reflectToAttribute: true
         },
+        /**
+         * Valeur du titre de la chaîne obtenue au moyen des paramètres.
+         *
+         * @type {String}
+         */
         channelTitle: {
           type: String,
           reflectToAttribute: true

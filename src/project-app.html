@@ -546,9 +546,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- home view -->
         <project-home name="home" enabled=[[enable]]></project-home>
         <!-- list view of items in a category -->
-        <project-list name="list" route="[[subroute]]" offline="[[offline]]"></project-list>
+        <project-list name="list" route="[[subroute]]"></project-list>
         <!-- detail view of one item -->
-        <project-detail name="detail" route="[[subroute]]" offline="[[offline]]"></project-detail>
+        <project-detail name="detail" route="[[subroute]]"></project-detail>
         <!-- cart view -->
         <project-cart name="cart" cart="[[cart]]" total="[[total]]"></project-cart>
         <!-- checkout view -->
@@ -732,11 +732,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.addEventListener('announce', (e)=>this._onAnnounce(e));
         this.addEventListener('dom-change', (e)=>this._domChange(e));
         this.addEventListener('show-invalid-url-warning', (e)=>this._onFallbackSelectionTriggered(e));
-        // listen for online/offline
-        Polymer.RenderStatus.afterNextRender(this, () => {
-          window.addEventListener('online', (e)=>this._notifyNetworkStatus(e));
-          window.addEventListener('offline', (e)=>this._notifyNetworkStatus(e));
-        });
 
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
@@ -804,26 +799,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('service-worker.js', {scope: '/'});
               }
-              this._notifyNetworkStatus();
               this.loadComplete = true;
             });
           });
-        }
-      }
-
-      _notifyNetworkStatus() {
-        let oldOffline = this.offline;
-        this.offline =  !navigator.onLine;
-        // Show the snackbar if the user is offline when starting a new session
-        // or if the network status changed.
-        if (this.offline || (!this.offline && oldOffline === true)) {
-          if (!this._networkSnackbar) {
-            this._networkSnackbar = document.createElement('project-snackbar');
-            this.root.appendChild(this._networkSnackbar);
-          }
-          this._networkSnackbar.innerHTML = this.offline ?
-              'You are offline' : 'You are online';
-          this._networkSnackbar.open();
         }
       }
 

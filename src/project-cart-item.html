@@ -13,13 +13,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="my-icons.html">
 <link rel="import" href="project-image.html">
-<link rel="import" href="project-select.html">
 
 <dom-module id="project-cart-item">
 
   <template strip-whitespace>
 
-    <style include="project-select">
+    <style>
 
       :host {
         @apply --layout-horizontal;
@@ -30,16 +29,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       project-image {
         width: 72px;
         height: 72px;
-      }
-
-      project-select > select {
-        font-size: 16px;
-        padding-left: 40px;
-      }
-
-      project-select > project-md-decorator {
-        font-size: 12px;
-        border: none;
       }
 
       .name {
@@ -154,10 +143,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           top: -6px;
         }
 
-        project-select > select {
-          padding: 2px 24px 2px 40px;
-        }
-
         .quantity, .size, .price {
           text-align: left;
           width: auto;
@@ -174,27 +159,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <a href$="/detail/[[entry.item.category]]/[[entry.item.name]]">[[entry.item.title]]</a>
       </div>
       <div class="detail">
-        <div class="quantity">
-          <project-select>
-            <label prefix>Qty:</label>
-            <select id="quantitySelect" aria-label="Change quantity" value="[[entry.quantity]]"
-                on-change="_quantityChange">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-            </select>
-            <project-md-decorator aria-hidden="true"></project-md-decorator>
-          </project-select>
-        </div>
         <div class="size">Size: <span>[[entry.size]]</span></div>
         <div class="price">[[_formatPrice(entry.item.price)]]</div>
 

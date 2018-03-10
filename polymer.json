@@ -8,7 +8,6 @@
   ],
   "sources": [
     "src/**/*",
-    "data/**/*",
     "images/**/*",
     "bower.json"
   ],

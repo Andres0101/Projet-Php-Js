@@ -214,16 +214,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </project-button>
     </template>
 
-
-    <!--
-      project-network-warning shows a warning message when the items can't be rendered due
-      to network conditions.
-    -->
-    <project-network-warning
-        hidden$="[[!failure]]"
-        offline="[[offline]]"
-        on-try-reconnect="_tryReconnect"></project-network-warning>
-
   </template>
 
   <script>
@@ -239,11 +229,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         routeData: Object,
 
         video: Array,
-
-        offline: {
-          type: Boolean,
-          observer: '_offlineChanged'
-        },
 
         failure: Boolean
 
@@ -275,23 +260,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _addToCart() {
-        // This event will be handled by project-app.
+        // Cet événement sera géré par projet-app.
         this.dispatchEvent(new CustomEvent('add-cart-item', {
           bubbles: true, composed: true, detail: {
             item: this.item,
             quantity: parseInt(this.$.quantitySelect.value, 10),
             size: this.$.sizeSelect.value
           }}));
-      }
-
-      _tryReconnect() {
-        this.$.categoryData.refresh();
-      }
-
-      _offlineChanged(offline) {
-        if (!offline) {
-          this._tryReconnect();
-        }
       }
 
     }

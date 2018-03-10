@@ -111,15 +111,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </paper-button>
     </div>
 
-    <!--
-      project-network-warning shows a warning message when the items can't be rendered due
-      to network conditions.
-    -->
-    <project-network-warning
-        hidden$="[[!failure]]"
-        offline="[[offline]]"
-        on-try-reconnect="_tryReconnect"></project-network-warning>
-
   </template>
 
   <script>
@@ -185,11 +176,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         visible: {
           type: Boolean,
           value: false
-        },
-
-        offline: {
-          type: Boolean,
-          observer: '_offlineChanged'
         },
 
         failure: Boolean
@@ -284,16 +270,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // Remplacez le token de la valeur pageToken par le token de la page suivant
         this.$.ajax.params.pageToken = this.nextPage;
         this.$.ajax.generateRequest();
-      }
-
-      _tryReconnect() {
-        this.$.categoryData.refresh();
-      }
-
-      _offlineChanged(offline) {
-        if (!offline && this.isAttached) {
-          this._tryReconnect();
-        }
       }
 
     }

@@ -4,7 +4,6 @@
   "fragments": [
     "src/project-list.html",
     "src/project-detail.html",
-    "src/project-cart.html",
     "src/lazy-resources.html"
   ],
   "sources": [

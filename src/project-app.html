@@ -173,11 +173,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       }
 
-      .cart-btn-container {
-        position: relative;
-        width: 40px;
-      }
-
       .announcer {
         position: fixed;
         height: 0;
@@ -272,10 +267,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .drawer-list a.iron-selected {
         color: black;
         font-weight: bold;
-      }
-
-      project-cart-modal {
-        z-index: 2;
       }
 
       app-drawer {
@@ -451,16 +442,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       -->
       <project-category-data categories="{{categories}}"></project-category-data>
 
-      <!--
-        project-cart-data maintains the state of the user's shopping cart (in localstorage) and
-        calculates the total amount.
-      -->
-      <project-cart-data
-          id="cart"
-          cart="{{cart}}"
-          num-items="{{numItems}}"
-          total="{{total}}"></project-cart-data>
-
       <app-header role="navigation" id="header" effects="waterfall" condenses reveals>
         <app-toolbar>
           <div class="left-bar-item">
@@ -486,13 +467,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <span class="btn_logout_text">Déconnexion</span>
             <paper-progress class="bar_progress" hidden$="[[!_inProgress]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
           </paper-button>
-
-          <div class="cart-btn-container">
-            <a href="/cart" tabindex="-1">
-              <paper-icon-button icon="shopping-cart" aria-label$="Shopping cart: [[_computePluralizedQuantity(numItems)]]"></paper-icon-button>
-            </a>
-            <div class="cart-badge" aria-hidden="true" hidden$="[[!numItems]]">[[numItems]]</div>
-          </div>
         </app-toolbar>
 
         <!-- Lazy-create the tabs for larger screen sizes. -->
@@ -549,8 +523,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <project-list name="list" route="[[subroute]]"></project-list>
         <!-- detail view of one item -->
         <project-detail name="detail" route="[[subroute]]"></project-detail>
-        <!-- cart view -->
-        <project-cart name="cart" cart="[[cart]]" total="[[total]]"></project-cart>
 
         <project-404-warning name="404"></project-404-warning>
       </iron-pages>
@@ -723,9 +695,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // Custom elements polyfill safe way to indicate an element has been upgraded.
         this.removeAttribute('unresolved');
         // listen for custom events
-        this.addEventListener('add-cart-item', (e)=>this._onAddCartItem(e));
-        this.addEventListener('set-cart-item', (e)=>this._onSetCartItem(e));
-        this.addEventListener('clear-cart', (e)=>this._onClearCart(e));
         this.addEventListener('change-section', (e)=>this._onChangeSection(e));
         this.addEventListener('announce', (e)=>this._onAnnounce(e));
         this.addEventListener('dom-change', (e)=>this._domChange(e));
@@ -1079,31 +1048,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
-      _onAddCartItem(event) {
-        if (!this._cartModal) {
-          this._cartModal = document.createElement('project-cart-modal');
-          this.root.appendChild(this._cartModal);
-        }
-        this.$.cart.addItem(event.detail);
-        this._cartModal.open();
-        this._announce('Item added to the cart');
-      }
-
-      _onSetCartItem(event) {
-        let detail = event.detail;
-        this.$.cart.setItem(detail);
-        if (detail.quantity === 0) {
-          this._announce('Item deleted');
-        } else {
-          this._announce('Quantity changed to ' + detail.quantity);
-        }
-      }
-
-      _onClearCart() {
-        this.$.cart.clearCart();
-        this._announce('Cart cleared');
-      }
-
       // Elements in the app can notify a change to be a11y announced.
       _onAnnounce(e) {
         this._announce(e.detail);
@@ -1166,9 +1110,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return smallScreen && loadComplete;
       }
 
-      _computePluralizedQuantity(quantity) {
-        return quantity + ' ' + (quantity === 1 ? 'item' : 'items');
-      }
     }
 
     customElements.define(ProjectApp.is, ProjectApp);

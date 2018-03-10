@@ -13,7 +13,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/google-youtube/google-youtube.html">
-<link rel="import" href="project-button.html">
 <link rel="import" href="project-category-data.html">
 <link rel="import" href="project-common-styles.html">
 
@@ -21,7 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
-    <style include="project-common-styles project-button">
+    <style include="project-common-styles">
 
       :host {
         @apply --layout-vertical;
@@ -208,10 +207,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </div>
       </template>
-
-      <project-button responsive>
-        <button on-click="_addToCart" aria-label="Add this item to cart">Add to Cart</button>
-      </project-button>
     </template>
 
   </template>
@@ -255,16 +250,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _hasTags(array) {
         // Renvoie 'true' si la vidéo a des tags
         return array != null;
-      }
-
-      _addToCart() {
-        // Cet événement sera géré par projet-app.
-        this.dispatchEvent(new CustomEvent('add-cart-item', {
-          bubbles: true, composed: true, detail: {
-            item: this.item,
-            quantity: parseInt(this.$.quantitySelect.value, 10),
-            size: this.$.sizeSelect.value
-          }}));
       }
 
     }

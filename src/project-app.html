@@ -56,6 +56,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: var(--app-primary-color);
       }
 
+      /* Login */
       #login_container {
         padding: 5% 20%;
       }
@@ -64,7 +65,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.07), 0 3px 14px 2px rgba(0, 0, 0, 0.06), 0 5px 5px -3px rgba(0, 0, 0, 0.1);
         padding: 40px 80px;
       }
-
       .btn_google {
         width: 100%;
       }
@@ -86,7 +86,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width: 100%;
         text-align: center;
       }
-
       .div_line {
         background-color: var(--paper-grey-300);
         height: 1px;
@@ -108,11 +107,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         -o-user-select: none;
         user-select: none;
       }
-
       #passwordIconButton {
         color: var(--paper-grey-500);
       }
-
       .btn_signin,
       .btn_signup,
       .btn_reset_pw {
@@ -124,7 +121,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: var(--paper-grey-500);
         text-align: center;
       }
-
       .link_reset_pw {
         color: var(--paper-grey-500);
         text-decoration: none;
@@ -140,11 +136,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-decoration: underline;
       }
 
-      .menu_btn,
-      iron-icon {
-        color: var(--paper-grey-700);
-      }
-
+      /* Heder */
       app-header {
         background-color: rgba(255, 255, 255, 0.95);
         --app-header-shadow: {
@@ -153,40 +145,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           bottom: -10px;
         };
       }
-
+      .left_bar_item {
+        width: 40px;
+      }
+      .menu_btn {
+        display: none;
+      }
+      .menu_btn,
+      iron-icon {
+        color: var(--paper-grey-700);
+      }
       paper-icon-button {
         color: var(--app-primary-color);
       }
-
+      .logo_container {
+        @apply --layout-horizontal;
+      }
       #header_logo {
         width: 50px;
         height: 50px;
         margin-top: 10px;
       }
-
-      .left-bar-item {
-        width: 40px;
+      .welcome_text {
+        margin-right: 10px;
       }
 
-      .menu_btn {
-        display: none;
-
-      }
-
-      .announcer {
-        position: fixed;
-        height: 0;
-        overflow: hidden;
-      }
-
-      :host(:not([page=detail])) .back-btn {
+      :host(:not([page=detail])) .back_btn {
         display: none;
       }
-
       [hidden] {
         display: none !important;
       }
 
+      /* Tabs */
       #tabContainer {
         position: relative;
       }
@@ -212,63 +203,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         margin-right: 20px;
       }
 
-      project-tabs, project-tab {
-        --project-tab-overlay: {
-          border-bottom: 2px solid var(--app-accent-color);
-        };
-      }
-
-      project-tabs {
-        height: 100%;
-      }
-
-      project-tab {
-        margin: 0 10px;
-      }
-
-      project-tab a {
-        display: inline-block;
-        outline: none;
-        padding: 9px 5px;
-        font-size: 13px;
-        font-weight: 500;
-        text-decoration: none;
-        color: var(--app-primary-color);
-      }
-
-      .cart-badge {
-        position: absolute;
-        top: -2px;
-        right: 0;
-        width: 20px;
-        height: 20px;
-        background-color: var(--app-accent-color);
-        border-radius: 50%;
-        color: white;
-        font-size: 12px;
-        font-weight: 500;
-        pointer-events: none;
-        @apply --layout-vertical;
-        @apply --layout-center-center;
-      }
-
-      .drawer-list {
+      .drawer_list {
         margin: 0 20px;
       }
-
-      .drawer-list a {
+      .drawer_list a {
         display: block;
         padding: 0 16px;
         line-height: 40px;
         text-decoration: none;
         color: var(--app-secondary-color);
       }
-
-      .drawer-list a.iron-selected {
+      .drawer_list a.iron-selected {
         color: black;
         font-weight: bold;
       }
 
+      /* Sitebar */
       app-drawer {
         z-index: 3;
       }
@@ -276,16 +226,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       iron-pages {
         max-width: 1440px;
         margin: 0 auto;
-      }
-
-      .demo-label {
-        box-sizing: border-box;
-        width: 120px;
-        padding: 6px;
-        margin: 8px auto 0;
-        background-color: var(--app-primary-color);
-        color: white;
-        text-transform: uppercase;
       }
 
       .bar_progress  {
@@ -316,6 +256,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         .btn_logout_text {
           display: none;
         }
+        .logo_container {
+          @apply --layout-center-center;
+        }
+        .welcome_text {
+          display: none;
+        }
 
         :host([page=detail]) .menu_btn {
           display: none;
@@ -325,20 +271,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <!-- Les éléments app-location et app-route fournissent l'état de l'URL
-    de l'application. -->
+    de l'application -->
     <app-location route="{{route}}"></app-location>
     <app-route
-        route="{{route}}"
-        pattern="/:page"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+      route="{{route}}"
+      pattern="/:page"
+      data="{{routeData}}"
+      tail="{{subroute}}" >
+    </app-route>
 
+    <!-- app-localstorage-document sauvegarde l'info de l'utilisateur qui vient
+    de se connecter -->
     <app-localstorage-document key="session" data="{{userInfo}}"></app-localstorage-document>
 
+    <!-- iron-media-query permet de savoir quand on est dans un écran petit -->
     <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
 
     <!-- Condition pour valider si il y a un utilisateur connecté
-    Si il n'y a pas d'utilisateur, on montres le login form. -->
+    Si il n'y a pas d'utilisateur, on montres le login form -->
     <template is="dom-if" if="[[!userLogin]]" restamp="true">
       <div id="login_container" class="layout vertical center">
         <div id="login_form">
@@ -437,31 +387,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- Condition pour valider si il y a un utilisateur connecté
     Si il y a un utilisateur, on montres le contenu du site -->
     <template is="dom-if" if="[[userLogin]]" restamp="true">
-      <!--
-        project-category-data provides the list of categories.
-      -->
+      <!-- Project-category-data fournit la liste de catégories -->
       <project-category-data categories="{{categories}}"></project-category-data>
 
       <app-header role="navigation" id="header" effects="waterfall" condenses reveals>
         <app-toolbar>
-          <div class="left-bar-item">
+          <div class="left_bar_item">
             <paper-icon-button
                 class="menu_btn"
                 icon="menu"
                 on-click="_toggleDrawer"
                 aria-label="Categories">
             </paper-icon-button>
-            <a class="back-btn" href="/list/[[categoryName]]" tabindex="-1">
+            <a class="back_btn" href="/list/[[categoryName]]" tabindex="-1">
               <paper-icon-button icon="arrow-back" aria-label="Go back"></paper-icon-button>
             </a>
           </div>
 
-          <div class="layout horizontal center-center flex">
+          <div class="logo_container flex">
             <a href="/" aria-label="Project Home">
               <iron-image id="header_logo" src="../images/logo.svg" preload sizing="contain"></iron-image>
             </a>
           </div>
 
+          <div class="welcome_text paper-font-caption">
+            Bienvenue,
+            <template is="dom-if" if="[[userInfo.0.displayName]]" restamp="true">
+              [[userInfo.0.displayName]]
+            </template>
+            <template is="dom-if" if="[[!userInfo.0.displayName]]" restamp="true">
+              [[userInfo.0.email]]
+            </template>
+          </div>
           <paper-button class="btn_logout" raised disabled$="[[_inProgress]]" on-tap="_userLogout">
             <iron-icon class="btn_logout_icon" icon="exit-to-app"></iron-icon>
             <span class="btn_logout_text">Déconnexion</span>
@@ -469,7 +426,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </paper-button>
         </app-toolbar>
 
-        <!-- Lazy-create the tabs for larger screen sizes. -->
+        <!-- Lazy crée les onglets pour les plus grandes tailles d'écran -->
         <div id="tabContainer" sticky$="[[_shouldShowTabs]]" hidden$="[[!_shouldShowTabs]]">
           <template is="dom-if" if="[[_shouldRenderTabs]]" restamp="true">
             <paper-tabs selected="[[categoryName]]" attr-for-selected="name" role="navigation">
@@ -496,12 +453,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
       </app-header>
 
-      <!-- Lazy-create the drawer for small screen sizes. -->
+      <!-- Lazy crée les onglets pour les petites tailles d'écran -->
       <dom-if if="[[_shouldRenderDrawer]]">
         <template>
-        <!-- Two-way bind `drawerOpened` since app-drawer can update `opened` itself. -->
         <app-drawer opened="{{drawerOpened}}" swipe-open tabindex="0">
-          <iron-selector role="navigation" class="drawer-list" selected="[[categoryName]]" attr-for-selected="name">
+          <iron-selector role="navigation" class="drawer_list" selected="[[categoryName]]" attr-for-selected="name">
             <a class="link" name="films" href="/list/films" tabindex="-1">
               Films
             </a>
@@ -517,13 +473,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </dom-if>
 
       <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
-        <!-- home view -->
+        <!-- Elément de la page d'accueil -->
         <project-home name="home" enabled=[[enable]]></project-home>
-        <!-- list view of items in a category -->
+        <!-- Elément de la liste des items -->
         <project-list name="list" route="[[subroute]]"></project-list>
-        <!-- detail view of one item -->
+        <!-- Elément de la vue de detail -->
         <project-detail name="detail" route="[[subroute]]"></project-detail>
-
+        <!-- Elément de la page d'erreur -->
         <project-404-warning name="404"></project-404-warning>
       </iron-pages>
     </template>
@@ -531,13 +487,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- Afficher les messages de l'application -->
     <paper-toast id="toast"></paper-toast>
 
-    <!-- a11y announcer -->
-    <div class="announcer" aria-live="assertive">[[_a11yLabel]]</div>
-
   </template>
 
   <script>
-
     // Performance de connexion
     window.performance && performance.mark && performance.mark('project-app - before register');
 
@@ -579,11 +531,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: String,
           reflectToAttribute: true,
           observer: '_pageChanged'
-        },
-
-        numItems: {
-          type: Number,
-          value: 0
         },
 
         /**
@@ -668,20 +615,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: false
         },
 
+        /**
+        * `True` lorsqu'on est dans un écran de grande taille, sinon `false`.
+         */
         _shouldShowTabs: {
           computed: '_computeShouldShowTabs(page, smallScreen)'
         },
-
         _shouldRenderTabs: {
           computed: '_computeShouldRenderTabs(_shouldShowTabs, loadComplete)'
         },
 
+        /**
+         * `True` lorsqu'on est dans un écran de petite taille, sinon `false`.
+         */
         _shouldRenderDrawer: {
           computed: '_computeShouldRenderDrawer(smallScreen, loadComplete)'
         }
       }}
 
       static get observers() { return [
+        // Observer pour gérer le changement de page
         '_routePageChanged(routeData.page)'
       ]}
 
@@ -692,14 +645,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       ready() {
         super.ready();
-        // Custom elements polyfill safe way to indicate an element has been upgraded.
+        // Les éléments personnalisés polyfill façon sûre d'indiquer un élément a été mis à jour
         this.removeAttribute('unresolved');
-        // listen for custom events
+        // Listeners personnalisés
         this.addEventListener('change-section', (e)=>this._onChangeSection(e));
-        this.addEventListener('announce', (e)=>this._onAnnounce(e));
         this.addEventListener('dom-change', (e)=>this._domChange(e));
+        // Afficher page d'errour
         this.addEventListener('show-invalid-url-warning', (e)=>this._onFallbackSelectionTriggered(e));
 
+        // Méthode de Firebase qui permet savoir si il y a un utilisateur connecté
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             // L'utilisateur est connecté.
@@ -714,13 +668,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _routePageChanged(page) {
+        // Si on est dans la page 'list' on met le scroll en haut
         if (this.page === 'list') {
           this._listScrollTop = window.pageYOffset;
         }
 
         this.page = page || 'home';
 
-        // Close the drawer - in case the *route* change came from a link in the drawer.
+        // Fermer la barre latérale (drawer) - au cas où le changement de *route* proviendrait
+        // d'un lien dans le drawer
         this.drawerOpened = false;
       }
 
@@ -750,7 +706,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (shouldResetLayout) {
           // La taille de l'header dépend de la page (par exemple sur certaines pages,
           // les onglets n'apparaissent pas), donc réinitialisez la mise en page
-          // de l'header uniquement lors du changement de page.
+          // de l'header uniquement lors du changement de page
           Polymer.Async.timeOut.run(() => {
             this.shadowRoot.querySelector('#header').resetLayout();
           }, 1);
@@ -758,11 +714,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _ensureLazyLoaded() {
-        // load lazy resources after render and set `loadComplete` when done.
+        // Charger les lazy ressources après le render et définir à `true`
+        // `loadComplete` une fois terminé
         if (!this.loadComplete) {
           Polymer.RenderStatus.afterNextRender(this, () => {
             Polymer.importHref(this.resolveUrl('lazy-resources.html'), () => {
-              // Register service worker if supported.
+              // Enregistrer le service worker s'il est pris en charge
               if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('service-worker.js', {scope: '/'});
               }
@@ -774,14 +731,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       // =========================== Actions toggles ===========================
       /**
-       * Affiche le menu à gauche de l'écran.
+       * Affiche le menu à gauche de l'écran
        */
       _toggleDrawer() {
         this.drawerOpened = !this.drawerOpened;
       }
       /**
        * Bascule les vues de formulaire de la vue signIn à la vue signUp et
-       * inversement.
+       * inversement
        */
       _toggleShowSignUp() {
         this.showSignUp = !this.showSignUp;
@@ -802,7 +759,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // =========================== SignIn section ===========================
       /**
        * Essaie de se connecter un utilisateur en utilisant les valeurs
-       * du formulaire (E-mail).
+       * du formulaire (E-mail)
        */
       _signIn() {
         var e = this.shadowRoot.querySelector('#emailInput').validate();
@@ -813,7 +770,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             .then(function (user) {
               // Lorsque l'utilisateur se connecte,
               // on modifie l'indicateur _inProgress à false
-              // et on nettoie les inputs de formulaire.
+              // et on nettoie les inputs de formulaire
               this._inProgress = false;
               this._cleanInputs();
             }.bind(this))
@@ -840,7 +797,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       /**
-       * Essaie de se connecter un utilisateur en utilisant son compte Google.
+       * Essaie de se connecter un utilisateur en utilisant son compte Google
        */
       _signInGoogle() {
         firebase.auth().signInWithPopup(provider).then(function(result) {
@@ -861,7 +818,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       // =========================== SignUp section ===========================
       /**
-       * Essaie d'inscrire un utilisateur en utilisant les valeurs du formulaire.
+       * Essaie d'inscrire un utilisateur en utilisant les valeurs du formulaire
        */
       _signUp(e) {
         var e = this.shadowRoot.querySelector('#emailInput').validate();
@@ -966,7 +923,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       // ================== Méthodes de nettoyage des inputs ==================
       /**
-       * Nettoie les inputs d'e-mail et de mot de passe.
+       * Nettoie les inputs d'e-mail et de mot de passe
        */
       _cleanInputs() {
         this.shadowRoot.querySelector('#emailInput').value = '';
@@ -974,7 +931,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       /**
-       * Nettoie l'input de mot de passe.
+       * Nettoie l'input de mot de passe
        */
       _cleanPasswordInput() {
         this.shadowRoot.querySelector('#passwordInput').value = '';
@@ -984,7 +941,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _userLogout() {
         firebase.auth().signOut()
           .then(function() {
-            // Déconnexion réussie.
+            // Déconnexion réussie
             this.$.toast.text = "Déconnexion réussie";
             this.$.toast.show();
 
@@ -1019,47 +976,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
-      // Elements in the app can notify section changes.
-      // Response by a11y announcing the section and syncronizing the category.
+      // Méthode pour gérer les changements de section à l'intérieur des éléments
       _onChangeSection(event) {
         let detail = event.detail;
 
-        // Scroll to the top of the page when navigating to a non-list page. For list view,
-        // scroll to the last saved position only if the category has not changed.
+        // Scroll vers le haut de la page lorsqu'on est dans une page sans liste.
+        // Pour la vue de liste, scroll jusqu'à la dernière position sauvegardée
+        // uniquement si la catégorie n'a pas changé
         let scrollTop = 0;
         if (this.page === 'list') {
           if (this.categoryName === detail.category) {
             scrollTop = this._listScrollTop;
           } else {
             // Reset the list view scrollTop if the category changed.
+            // Réinitialiser le scrollTop de la vue de liste si la catégorie a changé
             this._listScrollTop = 0;
           }
         }
-        // Use `Polymer.AppLayout.scroll` with `behavior: 'silent'` to disable header scroll
-        // effects during the scroll.
+        // Utiliser `Polymer.AppLayout.scroll` avec `behavior: 'silent'` pour
+        // désactiver les effets de scroll du header pendant le scroll
         Polymer.AppLayout.scroll({ top: scrollTop, behavior: 'silent' });
 
         this.categoryName = detail.category || '';
-
-        // Announce the page's title
-        if (detail.title) {
-          document.title = detail.title + ' - Projet';
-          this._announce(detail.title + ', loaded');
-        }
-      }
-
-      // Elements in the app can notify a change to be a11y announced.
-      _onAnnounce(e) {
-        this._announce(e.detail);
-      }
-
-      // A11y announce the given message.
-      _announce(message) {
-        this._a11yLabel = '';
-        this._announceDebouncer = Polymer.Debouncer.debounce(this._announceDebouncer,
-          Polymer.Async.timeOut.after(100), () => {
-            this._a11yLabel = message;
-          });
       }
 
       // This is for performance logging only.
@@ -1095,18 +1033,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _onFallbackSelectionTriggered() {
+        // Afficher page d'erreur
         this.page = '404';
       }
 
       _computeShouldShowTabs(page, smallScreen) {
+        // `True` lorsqu'on est dans la page home, list ou detail et la taille de
+        // l'écran est grande, sinon `false`
         return (page === 'home' || page === 'list' || page === 'detail') && !smallScreen;
       }
 
       _computeShouldRenderTabs(_shouldShowTabs, loadComplete) {
+        // `True` lorsqu'on montre les tabs est la variable loadComplete est `true`,
+        // sinon `false`
         return _shouldShowTabs && loadComplete;
       }
 
       _computeShouldRenderDrawer(smallScreen, loadComplete) {
+        // `True` lorsqu'on est dans un écrand de petite taille
         return smallScreen && loadComplete;
       }
 

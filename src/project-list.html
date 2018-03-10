@@ -80,10 +80,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       project-category-data provides the category data for a given category name.
     -->
     <project-category-data
-        id="categoryData"
-        category-name="[[routeData.category]]"
-        category="{{category}}"
-        failure="{{failure}}"></project-category-data>
+      id="categoryData"
+      category-name="[[routeData.category]]"
+      category="{{category}}" >
+    </project-category-data>
 
     <div class="app-grid">
       <!-- Looper l'array obtenu à partir de la requête à l'API YouTube -->
@@ -176,9 +176,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         visible: {
           type: Boolean,
           value: false
-        },
-
-        failure: Boolean
+        }
 
       }}
 

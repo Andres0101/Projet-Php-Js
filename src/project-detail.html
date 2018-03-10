@@ -162,11 +162,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       project-category-data provides the item data for a given category and item name.
     -->
     <project-category-data
-        id="categoryData"
-        category-name="[[routeData.category]]"
-        item-name="[[routeData.item]]"
-        item="{{item}}"
-        failure="{{failure}}"></project-category-data>
+      id="categoryData"
+      category-name="[[routeData.category]]"
+      item-name="[[routeData.item]]"
+      item="{{item}}" >
+    </project-category-data>
 
     <!-- Looper l'array obtenu à partir de la requête à l'API YouTube -->
     <template is="dom-repeat" items="{{video}}" as="info">
@@ -228,9 +228,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         routeData: Object,
 
-        video: Array,
-
-        failure: Boolean
+        video: Array
 
       }}
 

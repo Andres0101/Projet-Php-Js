@@ -140,9 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
 
-    <!--
-      app-route provides the name of the category and the item.
-    -->
+    <!-- L'éléments app-route fournit le nom de la catégorie -->
     <app-route
         route="[[route]]"
         pattern="/:category/:item"
@@ -157,9 +155,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       debounce-duration="300">
     </iron-ajax>
 
-    <!--
-      project-category-data provides the item data for a given category and item name.
-    -->
+    <!-- project-category-data fournit les données de catégorie pour un nom de
+      catégorie donné -->
     <project-category-data
       id="categoryData"
       category-name="[[routeData.category]]"
@@ -219,10 +216,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get properties() { return {
 
+        /**
+         * Object qui contient la route du lien donnée par project-app.
+         *
+         * @type {Object}
+         */
         route: Object,
 
+        /**
+         * Object qui contient la réponse de l'app-route.
+         *
+         * @type {Object}
+         */
         routeData: Object,
 
+        /**
+         * Array pour ajouter après les données de la réponse ajax.
+         *
+         * @type {Array}
+         */
         video: Array
 
       }}
@@ -242,8 +254,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.ajax.generateRequest();
       }
 
-      _handleResponse(data) {
-        // Handler la reponse de la requête ajax.
+      _handleResponse(data) { // Handler la reponse de la requête ajax
+        // Remplir array avec les donées de la requête à l'API YouTube
         this.video = data.detail.response.items;
       }
 

@@ -38,10 +38,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get properties() { return {
 
+        /**
+         * Valeur du nom de la categorie donnée via l'élément project-category-data
+         *
+         * @type {String}
+         */
         categoryName: String,
 
+        /**
+         * Valeur du nom de l'item donnée via l'élément project-category-data
+         *
+         * @type {String}
+         */
         itemName: String,
 
+        /**
+         * Array qui contient la liste des catégories
+         *
+         * @type {Array}
+         * @default []
+         */
         categories: {
           type: Array,
           value: categoryList,
@@ -72,9 +88,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _computeCategory(categoryName) {
-        // Fetch the items of the category. Note that the fetch is asynchronous,
-        // which means `category.items` may not be set initially (but that path
-        // will be notified when the fetch completes).
+        // Récupère les objets de la catégorie. Notez que l'extraction est asynchrone,
+        // ce qui signifie que `category.items` ne peut pas être défini initialement
+        // (mais ce chemin sera notifié lorsque l'extraction sera terminée).
         let categoryObj = this._getCategoryObject(categoryName);
         return categoryObj;
       }

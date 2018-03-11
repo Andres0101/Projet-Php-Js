@@ -13,10 +13,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="elements/item-card.html">
+<link rel="import" href="elements/placeholder-card.html">
 <link rel="import" href="project-category-data.html">
 <link rel="import" href="project-common-styles.html">
-
-<link rel="import" href="elements/item-card.html">
 
 <dom-module id="project-list">
 
@@ -32,6 +32,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --app-grid-gutter: 8px;
         @apply --layout-vertical;
         @apply --layout-center;
+      }
+
+      .items_placeholder {
+        width: 100%;
       }
 
       .pagination {
@@ -85,6 +89,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       category="{{category}}" >
     </project-category-data>
 
+    <!-- Montrer un placeholder du module en obtenant les résultats -->
+    <template is="dom-if" if="[[loadingData]]" restamp="true">
+      <div class="app-grid items_placeholder">
+        <template is="dom-repeat" items="{{youtube}}" as="index">
+          <placeholder-card></placeholder-card>
+        </template>
+      </div>
+    </template>
+
     <div class="app-grid">
       <!-- Looper l'array obtenu à partir de la requête à l'API YouTube -->
       <template is="dom-repeat" items="{{youtube}}" as="video">
@@ -128,6 +141,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         routeData: Object,
 
         youtube: Array,
+
+        loadingData: {
+          type: Boolean,
+          value: true
+        },
 
         /**
          * Valeur de la page précédent dans la requête de l'API YouTube.
@@ -252,6 +270,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.nextPage = data.detail.response.nextPageToken;
 
         this.youtube = data.detail.response.items;
+
+        this.loadingData = false;
       }
 
       _prevPageLoad() {

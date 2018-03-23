@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-scroll-threshold/iron-scroll-threshold.html">
 <link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="elements/item-card.html">
 <link rel="import" href="elements/placeholder-card.html">
@@ -76,7 +77,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       id="ajax"
       url="https://www.googleapis.com/youtube/v3/search"
       handle-as="json"
-      on-response="_handleResponse"
+      loading="{{loading}}"
+      on-response="_didRespond"
       debounce-duration="300">
     </iron-ajax>
 
@@ -88,18 +90,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       category="{{category}}" >
     </project-category-data>
 
-    <!-- Montrer un placeholder du module en obtenant les résultats -->
-    <template is="dom-if" if="[[loadingData]]" restamp="true">
-      <div class="app-grid items_placeholder">
-        <template is="dom-repeat" items="{{youtube}}" as="index">
-          <placeholder-card></placeholder-card>
-        </template>
-      </div>
-    </template>
-
     <div class="app-grid">
       <!-- Looper l'array obtenu à partir de la requête à l'API YouTube -->
-      <template is="dom-repeat" items="{{youtube}}" as="video">
+      <template id="list" is="dom-repeat" items="[]" as="video">
         <item-card
           url="[[_getItemHref(video.id.videoId)]]"
           image="[[video.snippet.thumbnails.high.url]]"
@@ -112,16 +105,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </div>
 
-    <div class="pagination layout horizontal center-center">
-      <paper-button raised on-tap="_prevPageLoad" disabled$="[[!prevPage]]">
-        Précédent
-        <paper-progress class="bar_progress" hidden$="[[!_inProgressPrev]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
-      </paper-button>
-      <paper-button raised on-tap='_nextPageLoad' disabled$="[[!nextPage]]">
-        Suivant
-        <paper-progress class="bar_progress" hidden$="[[!_inProgressNext]]" disabled$="[[!_inProgress]]" indeterminate></paper-progress>
-      </paper-button>
-    </div>
+    <!-- Montrer un placeholder du module en obtenant les résultats -->
+    <template is="dom-if" if="[[loading]]" restamp="true">
+      <div class="app-grid items_placeholder">
+        <template is="dom-repeat" items="{{youtube}}" as="index">
+          <placeholder-card></placeholder-card>
+        </template>
+      </div>
+    </template>
+
+    <!-- Cet élément va charger plus de données lorsque l'utilisateur descend et
+    atteint le threshold inférieur -->
+    <iron-scroll-threshold id="scrollTheshold"
+        lower-threshold="10"
+        on-lower-threshold="_load"
+        scroll-target="document"></iron-scroll-threshold>
 
   </template>
 
@@ -162,28 +160,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         youtube: Array,
 
         /**
-         * `True` lorsqu'on obtient les données ajax, sinon `false`.
-         *
-         * @type {Boolean}
-         * @default true
-         */
-        loadingData: {
-          type: Boolean,
-          value: true
-        },
-
-        /**
-         * Valeur de la page précédent dans la requête de l'API YouTube.
-         *
-         * @type {String}
-         * @default ''
-         */
-        prevPage: {
-          type: String,
-          value: ''
-        },
-
-        /**
          * Valeur de la page suivant dans la requête de l'API YouTube.
          *
          * @type {String}
@@ -192,28 +168,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         nextPage: {
           type: String,
           value: ''
-        },
-
-        /**
-         * Indique si le processus de chargement de la page précédent est en cours.
-         *
-         * @type {Boolean}
-         * @default false
-         */
-        _inProgressPrev: {
-          type: Boolean,
-          value: false
-        },
-
-        /**
-         * Indique si le processus de chargement de la page suivant est en cours.
-         *
-         * @type {Boolean}
-         * @default false
-         */
-        _inProgressNext: {
-          type: Boolean,
-          value: false
         },
 
         visible: {
@@ -243,6 +197,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return videoId ? ['/detail', this.category.name, videoId].join('/') : null;
       }
 
+      _load() {
+        this.$.ajax.params = {
+          part: "snippet",
+          key: "AIzaSyBNZJJG60vZVode3qiREesllCTg8a3r8lw",
+          type: "video",
+          videoCategoryId: this.category.id,
+          pageToken: this.nextPage
+        };
+        this.$.ajax.generateRequest();
+      }
+
+      _didRespond(e) {
+        // Handler la reponse de la requête ajax.
+        this.nextPage = e.detail.response.nextPageToken;
+
+        // Remplir array avec les donées de la requête à l'API YouTube
+        this.youtube = e.detail.response.items;
+
+        this.youtube.forEach(function(video) {
+          this.$.list.push('items', video);
+        }.bind(this));
+        // Efface le threshold inférieur afin qu'on puisse charger plus de données
+        // lorsque l'utilisateur redescend
+        this.$.scrollTheshold.clearTriggers();
+      }
+
       _categoryChanged(category, visible) {
         if (!visible) {
           return;
@@ -257,50 +237,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   title: category.title
                 }}));
 
-              // Lorsque la catégorie change, une nouvelle requête est lancée
-              // sur l'API YouTube avec l'id de la catégorie
-              this.$.ajax.params = {
-                part: "snippet",
-                key: "AIzaSyBNZJJG60vZVode3qiREesllCTg8a3r8lw",
-                type: "video",
-                videoCategoryId: this.category.id
-              };
-              this.$.ajax.generateRequest();
+                // Vider l'array vidéos
+                this.$.list.items = [];
+                // Lancer une nouvelle requête
+                this.$.ajax.params = {
+                  part: "snippet",
+                  key: "AIzaSyBNZJJG60vZVode3qiREesllCTg8a3r8lw",
+                  type: "video",
+                  videoCategoryId: this.category.id
+                };
+                this.$.ajax.generateRequest();
             } else {
               this.dispatchEvent(new CustomEvent('show-invalid-url-warning', {
                 bubbles: true, composed: true}));
             }
           });
-      }
-
-      _handleResponse(data) { // Handler la réponse ajax
-        this._inProgressPrev = false;
-        this._inProgressNext = false;
-
-        // Handler la reponse de la requête ajax.
-        this.prevPage = data.detail.response.prevPageToken
-        this.nextPage = data.detail.response.nextPageToken;
-
-        // Remplir array avec les donées de la requête à l'API YouTube
-        this.youtube = data.detail.response.items;
-
-        this.loadingData = false;
-      }
-
-      _prevPageLoad() { // Méthode quand on click le button 'précédent' de la pagination
-        this._inProgressPrev = true;
-
-        // Remplacez le token de la valeur pageToken par le token de la page précédente
-        this.$.ajax.params.pageToken = this.prevPage;
-        this.$.ajax.generateRequest();
-      }
-
-      _nextPageLoad() { // Méthode quand on click le button 'suivant' de la pagination
-        this._inProgressNext = true;
-
-        // Remplacez le token de la valeur pageToken par le token de la page suivant
-        this.$.ajax.params.pageToken = this.nextPage;
-        this.$.ajax.generateRequest();
       }
 
     }
